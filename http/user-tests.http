@@ -1,6 +1,49 @@
+//https://sr-portal-graphql-api.vercel.app
+//http://localhost:3000/api/graphql
+
+######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "query { users { id firstname lastname email username createdAt updatedAt } }"
+  "query": "query { users { id firstname lastname email username createdAt updatedAt password } }"
 }
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query { user(id: \"cmag3cjpx0000i7tceu14nxhg\") { id firstname lastname email username createdAt updatedAt } }"
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { createUser(data: { firstname: \"John\", lastname: \"Doe\", username: \"johndoe\", email: \"john.doe@example.com\", password: \"test123\" }) { id firstname lastname username email createdAt updatedAt } }"
+}
+
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { updateUser(id: \"cmag3cjpx0000i7tceu14nxhg\", data: { firstname: \"Christian\", lastname: \"Esperon\" }) { id firstname lastname email username createdAt updatedAt } }"
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { deleteUser(id: \"cmahfd8t00000i7ac6ydts9lh\") { id firstname lastname email username createdAt updatedAt } }"
+}
+
+####
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation {login(data:{email: \"john.doe@example.com\", password: \"test123\"}){token}}"
+
+}
+
