@@ -1,6 +1,11 @@
 import { PrismaClient } from "../../generated/prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { requireAuth } from "helpers/auth";
+import { serialize } from "cookie";
+
+import { NextApiRequest, NextApiResponse } from "next";
+
 const prisma = new PrismaClient();
 
 type CreateUserArgs = {
@@ -13,8 +18,15 @@ type CreateUserArgs = {
 
 export const userResolvers = {
   Query: {
-    users: () => prisma.user.findMany(),
-    user: (_parent: unknown, args: { id: string }) => {
+    users: (_parent: unknown, args: {}, context: any) => {
+      console.log(context.user);
+      requireAuth(context); // ⛔ block if not authenticated
+
+      return prisma.user.findMany();
+    },
+    user: (_parent: unknown, args: { id: string }, context: any) => {
+      requireAuth(context); // ⛔ block if not authenticated
+
       return prisma.user.findUnique({
         where: {
           id: args.id,
@@ -23,7 +35,13 @@ export const userResolvers = {
     },
   },
   Mutation: {
-    createUser: async (_parent: unknown, args: { data: CreateUserArgs }) => {
+    createUser: async (
+      _parent: unknown,
+      args: { data: CreateUserArgs },
+      context: any
+    ) => {
+      requireAuth(context); // ⛔ block if not authenticated
+
       const hashedPassword = await bcrypt.hash(args.data.password, 10);
 
       return prisma.user.create({
@@ -40,8 +58,11 @@ export const userResolvers = {
     },
     updateUser: (
       _parent: unknown,
-      args: { id: string; data: Partial<CreateUserArgs> }
+      args: { id: string; data: Partial<CreateUserArgs> },
+      context: any
     ) => {
+      requireAuth(context); // ⛔ block if not authenticated
+
       return prisma.user.update({
         where: {
           id: args.id,
@@ -53,9 +74,18 @@ export const userResolvers = {
       });
     },
 
+    deleteUser: (_parent: unknown, args: { id: string }) => {
+      return prisma.user.delete({
+        where: {
+          id: args.id,
+        },
+      });
+    },
+
     login: async (
       _parent: unknown,
-      args: { data: { email: string; password: string } }
+      args: { data: { email: string; password: string } },
+      context: { res: NextApiResponse }
     ) => {
       const user = await prisma.user.findUnique({
         where: {
@@ -67,11 +97,7 @@ export const userResolvers = {
         throw new Error("User not found");
       }
 
-      console.log("password", args.data.password);
-      console.log("user", user.password);
       const isValid = await bcrypt.compare(args.data.password, user.password);
-
-      console.log("isValid", isValid);
 
       if (!isValid) {
         throw new Error("Invalid password");
@@ -81,18 +107,32 @@ export const userResolvers = {
         expiresIn: "1h",
       });
 
+      context.res.setHeader(
+        //cookie header set
+        "Set-Cookie",
+        serialize("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // true in production
+          sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+          maxAge: 60 * 60, // 1 hour
+          path: "/",
+        })
+      );
+
       return {
-        token,
         user,
       };
     },
 
-    deleteUser: (_parent: unknown, args: { id: string }) => {
-      return prisma.user.delete({
-        where: {
-          id: args.id,
-        },
-      });
+    logout: async (_parent: any, _args: any, context: any) => {
+      context.res.setHeader("Set-Cookie", [
+        //set cookie max age to expire
+        `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure=${
+          process.env.NODE_ENV === "production"
+        }`,
+      ]);
+
+      return true;
     },
   },
 };

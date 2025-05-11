@@ -39,7 +39,6 @@ export const userTypeDefs = gql`
   }
 
   type AuthPayload {
-    token: String!
     user: User!
   }
 
@@ -48,5 +47,6 @@ export const userTypeDefs = gql`
     updateUser(id: ID!, data: UpdateUserInput): User!
     deleteUser(id: ID!): User!
     login(data: LoginInput): AuthPayload!
+    logout: Boolean!
   }
 `;
