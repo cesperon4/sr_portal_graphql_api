@@ -52,6 +52,7 @@ const server = new ApolloServer({
       const token = cookies.token;
       if (token) {
         user = jwt.verify(token, process.env.JWT_SECRET!);
+        console.log("User from JWT:", user);
       }
     } catch (err) {
       console.error("JWT Error:", err);

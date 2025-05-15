@@ -13,13 +13,13 @@ type CreateUserArgs = {
   lastname: string;
   username: string;
   email: string;
+  role: "USER" | "GUEST";
   password: string;
 };
 
 export const userResolvers = {
   Query: {
     users: (_parent: unknown, args: {}, context: any) => {
-      console.log(context.user);
       requireAuth(context); // ⛔ block if not authenticated
 
       return prisma.user.findMany();
@@ -33,6 +33,24 @@ export const userResolvers = {
         },
       });
     },
+    me: async (_parent: unknown, _args: {}, context: any) => {
+      requireAuth(context); // optional helper to throw if not authenticated
+      const userId = context.user?.userId;
+
+      return await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          firstname: true,
+          lastname: true,
+          email: true,
+          username: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    },
   },
   Mutation: {
     createUser: async (
@@ -40,7 +58,7 @@ export const userResolvers = {
       args: { data: CreateUserArgs },
       context: any
     ) => {
-      requireAuth(context); // ⛔ block if not authenticated
+      // requireAuth(context); // ⛔ block if not authenticated
 
       const hashedPassword = await bcrypt.hash(args.data.password, 10);
 
@@ -50,6 +68,7 @@ export const userResolvers = {
           lastname: args.data.lastname,
           username: args.data.username,
           password: hashedPassword,
+          role: args.data.role,
           createdAt: new Date(),
           updatedAt: new Date(),
           email: args.data.email,
@@ -103,9 +122,16 @@ export const userResolvers = {
         throw new Error("Invalid password");
       }
 
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          role: "user", // distinguish guest from full user
+        },
+        process.env.JWT_SECRET!,
+        {
+          expiresIn: "1h",
+        }
+      );
 
       context.res.setHeader(
         //cookie header set
@@ -122,6 +148,30 @@ export const userResolvers = {
       return {
         user,
       };
+    },
+
+    loginGuest: async (
+      _parent: unknown,
+      args: {},
+      context: { res: NextApiResponse }
+    ) => {
+      const token = jwt.sign({ role: "guest" }, process.env.JWT_SECRET!, {
+        expiresIn: "1h",
+      });
+
+      context.res.setHeader(
+        //cookie header set
+        "Set-Cookie",
+        serialize("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production", // true in production
+          sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+          maxAge: 60 * 60, // 1 hour
+          path: "/",
+        })
+      );
+
+      return true;
     },
 
     logout: async (_parent: any, _args: any, context: any) => {

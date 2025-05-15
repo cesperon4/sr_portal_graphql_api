@@ -1,28 +1,36 @@
 import { gql } from "apollo-server-micro";
 
 export const userTypeDefs = gql`
+  enum Role {
+    USER
+    GUEST
+  }
+
   type User {
-    id: ID!
-    firstname: String!
-    email: String!
-    lastname: String!
-    username: String!
-    password: String!
-    createdAt: String!
-    updatedAt: String!
+    id: ID
+    firstname: String
+    email: String
+    lastname: String
+    username: String
+    password: String
+    role: Role!
+    createdAt: String
+    updatedAt: String
   }
 
   type Query {
     users: [User!]!
     user(id: ID!): User!
+    me: User!
   }
 
   input CreateUserInput {
-    firstname: String!
-    lastname: String!
-    username: String!
-    email: String!
-    password: String!
+    firstname: String
+    lastname: String
+    username: String
+    email: String
+    password: String
+    role: Role!
   }
 
   input UpdateUserInput {
@@ -47,6 +55,7 @@ export const userTypeDefs = gql`
     updateUser(id: ID!, data: UpdateUserInput): User!
     deleteUser(id: ID!): User!
     login(data: LoginInput): AuthPayload!
+    loginGuest: Boolean!
     logout: Boolean!
   }
 `;
