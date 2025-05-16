@@ -2,7 +2,7 @@
 //http://localhost:3000/api/graphql
 
 ######user
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFoZnNsd2EwMDAxaTdhYzR6aHIxd2NoIiwiaWF0IjoxNzQ2OTYwNDI0LCJleHAiOjE3NDY5NjQwMjR9.uypztmTV65b-w_Kgk1Bb4623I98RKckafE5nWcTaX7o
 
@@ -51,7 +51,7 @@ Content-Type: application/json
 
 }
 ####
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 
 {

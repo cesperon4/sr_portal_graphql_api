@@ -43,8 +43,11 @@ const server = new ApolloServer({
         ? "http://localhost:3001"
         : "https://sr-portal-gamma.vercel.app"
     );
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type"); //This ensures that the browser can send Content-Type headers with the request, which is required for JSON and other content types.
-
+    // res.setHeader("Access-Control-Allow-Headers", "Content-Type"); //This ensures that the browser can send Content-Type headers with the request, which is required for JSON and other content types.
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
     let user = null;
 
     try {
