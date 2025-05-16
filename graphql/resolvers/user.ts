@@ -133,14 +133,28 @@ export const userResolvers = {
         }
       );
 
+      // context.res.setHeader(
+      //   //cookie header set
+      //   "Set-Cookie",
+      //   serialize("token", token, {
+      //     httpOnly: true,
+      //     secure: process.env.NODE_ENV === "production", // true in production
+      //     // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+      //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
+
+      //     maxAge: 60 * 60, // 1 hour
+      //     path: "/",
+      //   })
+      // );
+
       context.res.setHeader(
         //cookie header set
         "Set-Cookie",
         serialize("token", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // true in production
+          secure: true, // true in production
           // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
+          sameSite: "none", // or "Strict" if you prefer tighter CSRF protection
 
           maxAge: 60 * 60, // 1 hour
           path: "/",
