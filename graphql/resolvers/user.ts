@@ -165,7 +165,7 @@ export const userResolvers = {
         //cookie header set
         "Set-Cookie",
         serialize("token", token, {
-          httpOnly: true,
+          // httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true in production
           sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
           maxAge: 60 * 60, // 1 hour
