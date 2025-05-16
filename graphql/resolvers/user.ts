@@ -165,11 +165,10 @@ export const userResolvers = {
         //cookie header set
         "Set-Cookie",
         serialize("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // true in production
+          httpOnly: true, // ✅ secure: hides cookie from JS
+          secure: process.env.NODE_ENV === "production", // ✅ must be true in production (HTTPS only)
           // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
-
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ required for cross-site cookies
           maxAge: 60 * 60, // 1 hour
           path: "/",
         })
