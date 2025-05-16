@@ -51,11 +51,16 @@ const server = new ApolloServer({
     let user = null;
 
     try {
-      const cookies = parse(req.headers.cookie || "");
-      const token = cookies.token;
+      // const cookies = parse(req.headers.cookie || "");
+      // const token = cookies.token;
+
+      //replace cookie headers
+      const authHeader = req.headers.authorization || "";
+      const token = authHeader.replace("Bearer ", "");
+      //
+
       if (token) {
         user = jwt.verify(token, process.env.JWT_SECRET!);
-        console.log("User from JWT:", user);
       }
     } catch (err) {
       console.error("JWT Error:", err);

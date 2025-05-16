@@ -2,9 +2,9 @@
 //http://localhost:3000/api/graphql
 
 ######user
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFoZnNsd2EwMDAxaTdhYzR6aHIxd2NoIiwiaWF0IjoxNzQ2OTYwNDI0LCJleHAiOjE3NDY5NjQwMjR9.uypztmTV65b-w_Kgk1Bb4623I98RKckafE5nWcTaX7o
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFteXMzeDQwMDAwaTdhczF6MXF2a2tkIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDc0MzM3OTIsImV4cCI6MTc0NzQzNzM5Mn0.vbWxdt88Mv9G3IYlA70rdP-gveauDhmJBdP8EuNUjgs
 
 {
   "query": "query { users { id firstname lastname email username createdAt updatedAt password } }"
@@ -45,9 +45,11 @@ Content-Type: application/json
 ####
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFteXMzeDQwMDAwaTdhczF6MXF2a2tkIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDc0MzM3OTIsImV4cCI6MTc0NzQzNzM5Mn0.vbWxdt88Mv9G3IYlA70rdP-gveauDhmJBdP8EuNUjgs
+
 
 {
-  "query": "mutation {login(data:{email: \"john.doe@example.com\", password: \"test123\"}){user{id role}}}"
+  "query": "mutation {login(data:{email: \"john.doe@example.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####
@@ -60,8 +62,10 @@ Content-Type: application/json
 }
 
 ####
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFteXMzeDQwMDAwaTdhczF6MXF2a2tkIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDc0MzM3OTIsImV4cCI6MTc0NzQzNzM5Mn0.vbWxdt88Mv9G3IYlA70rdP-gveauDhmJBdP8EuNUjgs
+
 
 {
   "query": "query {me{id firstname lastname email password username createdAt updatedAt}}"
