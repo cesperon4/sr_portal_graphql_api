@@ -139,8 +139,9 @@ export const userResolvers = {
         serialize("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true in production
-          // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: "none", // or "Strict" if you prefer tighter CSRF protection
+          // sameSite: "none", // or "Strict" if you prefer tighter CSRF protection
+          sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+
           maxAge: 60 * 60, // 1 hour
           path: "/",
         })
