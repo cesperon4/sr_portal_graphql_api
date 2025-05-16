@@ -161,20 +161,20 @@ export const userResolvers = {
         expiresIn: "1h",
       });
 
-      context.res.setHeader(
-        //cookie header set
-        "Set-Cookie",
-        serialize("token", token, {
-          httpOnly: true, // ✅ secure: hides cookie from JS
-          secure: process.env.NODE_ENV === "production", // ✅ must be true in production (HTTPS only)
-          // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ required for cross-site cookies
-          maxAge: 60 * 60, // 1 hour
-          path: "/",
-        })
-      );
+      // context.res.setHeader(
+      //   //cookie header set
+      //   "Set-Cookie",
+      //   serialize("token", token, {
+      //     httpOnly: true, // ✅ secure: hides cookie from JS
+      //     secure: process.env.NODE_ENV === "production", // ✅ must be true in production (HTTPS only)
+      //     // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+      //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ required for cross-site cookies
+      //     maxAge: 60 * 60, // 1 hour
+      //     path: "/",
+      //   })
+      // );
 
-      return true;
+      return { token };
     },
 
     logout: async (_parent: any, _args: any, context: any) => {

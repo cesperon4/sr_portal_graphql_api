@@ -1,6 +1,8 @@
 import { gql } from "apollo-server-micro";
 
 export const userTypeDefs = gql`
+  scalar Token
+
   enum Role {
     USER
     GUEST
@@ -48,7 +50,11 @@ export const userTypeDefs = gql`
 
   type AuthPayload {
     user: User!
-    token: String!
+    token: Token!
+  }
+
+  type GuestPayload {
+    token: Token!
   }
 
   type Mutation {
@@ -56,7 +62,7 @@ export const userTypeDefs = gql`
     updateUser(id: ID!, data: UpdateUserInput): User!
     deleteUser(id: ID!): User!
     login(data: LoginInput): AuthPayload!
-    loginGuest: Boolean!
+    loginGuest: GuestPayload!
     logout: Boolean!
   }
 `;
