@@ -73,6 +73,11 @@ export default async function handler(
 ) {
   await runCorsMiddleware(req, res);
 
+  if (req.method === "OPTIONS") {
+    res.end();
+    return;
+  }
+
   await startServer;
   return server.createHandler({
     path: "/api/graphql",
