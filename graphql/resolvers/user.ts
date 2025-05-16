@@ -137,7 +137,7 @@ export const userResolvers = {
         //cookie header set
         "Set-Cookie",
         serialize("token", token, {
-          httpOnly: true,
+          // httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true in production
           // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
           sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
@@ -165,9 +165,11 @@ export const userResolvers = {
         //cookie header set
         "Set-Cookie",
         serialize("token", token, {
-          // httpOnly: true,
+          httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true in production
-          sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+          // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
+
           maxAge: 60 * 60, // 1 hour
           path: "/",
         })
