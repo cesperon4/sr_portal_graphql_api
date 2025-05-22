@@ -1,0 +1,54 @@
+######postComment
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+   "query": "query { postComments { id postId body post{ id title } createdAt updatedAt } }"
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetPostComment($id: ID!) { postComment(id: $id) { id postId body post{ id title } createdAt updatedAt } }",
+  "variables": {
+    "id": 2
+  }
+}
+#####
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation CreatePostComment($data: CreatePostCommentInput!) { createPostComment(data: $data) { id postId body post{ id } createdAt updatedAt } }",
+  "variables": {
+    "data": {
+      "body": "This is a test post body.",
+      "postId": 3
+    }
+  }
+}
+
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation UpdatePostComment($id: ID!, $data: UpdatePostCommentInput!) { updatePostComment(id: $id, data: $data) { id postId body post{ id } createdAt updatedAt } }",
+  "variables": {
+    "id": 3,
+    "data": {
+      "body": "This is a test post body update"
+    }
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation DeletePostComment($id: ID!) { deletePostComment(id: $id) { id } }",
+  "variables": {
+    "id": 2
+  }
+}

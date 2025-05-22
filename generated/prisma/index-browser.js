@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.7.0
- * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
+ * Prisma Client JS version: 6.8.2
+ * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
  */
 Prisma.prismaVersion = {
-  client: "6.7.0",
-  engine: "3cff47a7f5d65c3ea74883f1d736e41d68ce91ed"
+  client: "6.8.2",
+  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -132,6 +132,55 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PostScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  body: 'body',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  arrestLogId: 'arrestLogId'
+};
+
+exports.Prisma.PostCommentScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  body: 'body',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ArrestLogScalarFieldEnum = {
+  id: 'id',
+  AGE: 'AGE',
+  ARREST_STATUS: 'ARREST_STATUS',
+  ArrestLocationAptFlr: 'ArrestLocationAptFlr',
+  ArrestLocationCity: 'ArrestLocationCity',
+  ArrestLocationStreet: 'ArrestLocationStreet',
+  ArrestLocationStreetNBR: 'ArrestLocationStreetNBR',
+  Arrest_Charge: 'Arrest_Charge',
+  Arrest_ID: 'Arrest_ID',
+  Case_Number: 'Case_Number',
+  Charge_Description: 'Charge_Description',
+  Charge_Sequence: 'Charge_Sequence',
+  DATE_ARRESTED: 'DATE_ARRESTED',
+  DOB: 'DOB',
+  Degree: 'Degree',
+  FIRSTNAME: 'FIRSTNAME',
+  LASTNAME: 'LASTNAME',
+  MIDDLENAME: 'MIDDLENAME',
+  OBJECTID: 'OBJECTID',
+  OBJECTID_1: 'OBJECTID_1',
+  RACE: 'RACE',
+  SEX: 'SEX',
+  SUFFIX: 'SUFFIX',
+  TIME_ARREST: 'TIME_ARREST',
+  UNIQUEKEY: 'UNIQUEKEY',
+  postId: 'postId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -141,13 +190,21 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   GUEST: 'GUEST'
 };
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Post: 'Post',
+  PostComment: 'PostComment',
+  ArrestLog: 'ArrestLog'
 };
 
 /**

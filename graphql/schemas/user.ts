@@ -16,14 +16,16 @@ export const userTypeDefs = gql`
     username: String
     password: String
     role: Role!
-    createdAt: String
-    updatedAt: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    posts: [Post]
   }
 
   type Query {
     users: [User!]!
     user(id: ID!): User!
     me: User!
+    chatBotResponse(prompt: String!): String!
   }
 
   input CreateUserInput {

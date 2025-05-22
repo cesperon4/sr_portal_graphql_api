@@ -1,0 +1,78 @@
+######post
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query { arrestLogs { id AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge postId } }"
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetPost($id: ID!) { post(id: $id) { id title body userId createdAt updatedAt arrestLogId } }",
+  "variables": {
+    "id": 3
+  }
+}
+#####
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation CreateArrestLog($data: CreateArrestLogInput!) { createArrestLog(data: $data) { AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge } }",
+  "variables": {
+    "data": {
+      "AGE": "30",
+      "ARREST_STATUS": "Pending",
+      "ArrestLocationAptFlr": "2B",
+      "ArrestLocationCity": "New York",
+      "ArrestLocationStreet": "Broadway",
+      "ArrestLocationStreetNBR": "123",
+      "Arrest_Charge": "NYPL 221.10",
+      "Arrest_ID": "AR123456",
+      "Case_Number": "CN789012",
+      "Charge_Description": "Possession of Marijuana",
+      "Charge_Sequence": "1",
+      "DATE_ARRESTED": "2024-06-01T13:45:00.000Z",
+      "DOB": "1994-01-01",
+      "Degree": "Misdemeanor",
+      "FIRSTNAME": "John",
+      "LASTNAME": "Doe",
+      "MIDDLENAME": "A",
+      "OBJECTID": 456789,
+      "OBJECTID_1": 987654,
+      "RACE": "White",
+      "SEX": "M",
+      "SUFFIX": "Jr",
+      "TIME_ARREST": "13:45",
+      "UNIQUEKEY": "UK1234567890",
+      "postId": 3
+      
+    }
+  }
+}
+
+###### update a post
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation UpdateArrestLog($id: ID!, $data: UpdateArrestLogInput!) { updateArrestLog(id: $id, data: $data) { id AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge postId } }",
+  "variables": {
+    "id": 5,
+    "data": {
+      "AGE": "93"
+    }
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation DeleteArrestLog($id: ID!) { deleteArrestLog(id: $id) { id } }",
+  "variables": {
+    "id": 5
+  }
+}

@@ -8,6 +8,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const prisma = new PrismaClient();
 
+type User = Awaited<ReturnType<typeof prisma.user.findUnique>>;
+
 type CreateUserArgs = {
   firstname: string;
   lastname: string;
@@ -186,6 +188,14 @@ export const userResolvers = {
       ]);
 
       return true;
+    },
+  },
+
+  User: {
+    posts: (parent: User, _args: {}) => {
+      return prisma.post.findMany({
+        where: { userId: parent?.id },
+      });
     },
   },
 };

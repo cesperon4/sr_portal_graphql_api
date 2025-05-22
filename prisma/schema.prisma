@@ -29,4 +29,60 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  posts Post[]
 }
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  title        String
+  body         String   
+  userId      String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  arrestLogId Int?     
+  user        User      @relation(fields: [userId], references: [id])
+  postComments PostComment[]
+  arrestLog ArrestLog?
+}
+
+model PostComment {
+  id      Int    @id @default(autoincrement())
+  postId Int
+  body    String 
+  post    Post   @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ArrestLog {
+  id                      Int     @id @default(autoincrement())
+  AGE                    String?
+  ARREST_STATUS          String?
+  ArrestLocationAptFlr   String?
+  ArrestLocationCity     String?
+  ArrestLocationStreet   String?
+  ArrestLocationStreetNBR String?
+  Arrest_Charge          String?
+  Arrest_ID              String?
+  Case_Number            String?
+  Charge_Description     String?
+  Charge_Sequence        String?
+  DATE_ARRESTED          String?
+  DOB                    String?
+  Degree                 String?
+  FIRSTNAME              String?
+  LASTNAME               String?
+  MIDDLENAME             String?
+  OBJECTID               Int?
+  OBJECTID_1             Int?
+  RACE                   String?
+  SEX                    String?
+  SUFFIX                 String?
+  TIME_ARREST            String?
+  UNIQUEKEY              String?  @unique
+  postId Int @unique
+  post    Post?   @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

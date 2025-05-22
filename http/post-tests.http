@@ -1,0 +1,57 @@
+######post#### https://sr-portal-graphql-api.vercel.app
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query { posts { id title body userId createdAt updatedAt arrestLogId user{ id } } }"
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetPost($id: ID!) { post(id: $id) { id title body userId createdAt updatedAt arrestLogId } }",
+  "variables": {
+    "id": 3
+  }
+}
+#####
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation CreatePost($data: CreatePostInput!) { createPost(data: $data) { id title body userId createdAt updatedAt arrestLogId } }",
+  "variables": {
+    "data": {
+      "title": "Test Post 8",
+      "body": "This is a test post body.",
+      "userId": "cmarxuxs60000i7315ejx4c73",
+      "arrestLogId": null
+    }
+  }
+}
+
+###### update a post
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation UpdatePost($id: ID!, $data: UpdatePostInput!) { updatePost(id: $id, data: $data) { id title body updatedAt } }",
+  "variables": {
+    "id": 2,
+    "data": {
+      "title": "Updated Title",
+      "body": "Updated body content"
+    }
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation DeletePost($id: ID!) { deletePost(id: $id) { id } }",
+  "variables": {
+    "id": 2
+  }
+}
