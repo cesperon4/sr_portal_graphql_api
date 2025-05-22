@@ -4,7 +4,7 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFteXMzeDQwMDAwaTdhczF6MXF2a2tkIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDc0MzM3OTIsImV4cCI6MTc0NzQzNzM5Mn0.vbWxdt88Mv9G3IYlA70rdP-gveauDhmJBdP8EuNUjgs
+Authorization: Bearer UzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFteXMzeDQwMDAwaTdhczF6MXF2a2tkIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDc0MzM3OTIsImV4cCI6MTc0NzQzNzM5Mn0.vbWxdt88Mv9G3IYlA70rdP-gveauDhmJBdP8EuNUjgs
 
 {
   "query": "query { users { id firstname lastname email username createdAt updatedAt password } }"
@@ -71,12 +71,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFyZ
 }
 
 ####
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
   "query" : "mutation {loginGuest{token}}"
 }
+####
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
 
+{
+  "query": "query { chatBotResponse(prompt: \"What are the benefits of GraphQL?\")}"
+
+}
 
 
