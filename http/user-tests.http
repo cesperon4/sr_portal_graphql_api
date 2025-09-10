@@ -4,7 +4,7 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NDc4OTg5NjgsImV4cCI6MTc0NzkwMjU2OH0.9RDBBdplh0yP8uuHvjL1sLlypDAHtb27l1--9fQJmyo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
 {
   "query": "query { users { id firstname lastname email username createdAt updatedAt password } }"
@@ -22,6 +22,8 @@ Content-Type: application/json
 ######
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
+
 
 {
   "query": "mutation { createUser(data: { firstname: \"John\", lastname: \"Doe\", username: \"johndoe\", email: \"john.doe@example.com\", password: \"test123\", role:USER }) { id firstname lastname username email createdAt updatedAt } }"
@@ -48,7 +50,7 @@ Content-Type: application/json
 
 
 {
-  "query": "mutation {login(data:{email: \"john.doe@example.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####

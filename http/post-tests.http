@@ -3,7 +3,7 @@ POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 
 {
-  "query": "query { posts { id title body userId createdAt updatedAt arrestLogId user{ id } } }"
+  "query": "query { posts { id title body userId createdAt updatedAt arrestLogId user{ id } postComments{ id } arrestLog{ id } } }"
 }
 ######
 POST http://localhost:3000/api/graphql

@@ -22,7 +22,7 @@ type CreateUserArgs = {
 export const userResolvers = {
   Query: {
     users: (_parent: unknown, args: {}, context: any) => {
-      requireAuth(context); // ⛔ block if not authenticated
+      // requireAuth(context); // ⛔ block if not authenticated
 
       return prisma.user.findMany();
     },
