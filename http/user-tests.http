@@ -2,7 +2,7 @@
 //http://localhost:3000/api/graphql
 
 ######user
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
@@ -26,7 +26,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 
 
 {
-  "query": "mutation { createUser(data: { firstname: \"John\", lastname: \"Doe\", username: \"johndoe\", email: \"john.doe@example.com\", password: \"test123\", role:USER }) { id firstname lastname username email createdAt updatedAt } }"
+  "query": "mutation { createUser(data: { firstname: \"John\", lastname: \"Doe\", username: \"johndoes\", email: \"johns.doe@example.com\", password: \"test123\", role:USER }) { id firstname lastname username email createdAt updatedAt } }"
+}
+
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
+
+
+{
+  "query": "mutation { upsertUser(data: { firstname: \"Joh\", lastname: \"Does\", email: \"john.does@example.com\"}) { email} }"
 }
 
 ######
@@ -45,12 +55,12 @@ Content-Type: application/json
 }
 
 ####
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 
 {
-  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"johns.doe@example.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####
