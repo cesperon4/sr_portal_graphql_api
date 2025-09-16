@@ -57,7 +57,6 @@ const server = new ApolloServer({
       //replace cookie headers
       const authHeader = req.headers.authorization || "";
       const token = authHeader.replace("Bearer ", "");
-      //
 
       if (token) {
         user = jwt.verify(token, process.env.JWT_SECRET!);
@@ -65,6 +64,8 @@ const server = new ApolloServer({
     } catch (err) {
       console.error("JWT Error:", err);
     }
+
+    console.log("user in context:", user);
 
     return { req, res, user };
   },

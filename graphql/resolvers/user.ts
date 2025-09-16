@@ -77,6 +77,55 @@ export const userResolvers = {
         },
       });
     },
+    upsertUser: async (
+      _parent: unknown,
+      args: {
+        data: CreateUserArgs &
+          Omit<
+            CreateUserArgs,
+            | "password"
+            | "lastname"
+            | "username"
+            | "role"
+            | "createdAt"
+            | "updatedAt"
+          >;
+      },
+      context: any
+    ) => {
+      const username = args.data.email.split("@")[0]; // simple default username
+      const defaultRole = "USER"; // assuming Role enum has USER
+
+      const user = await prisma.user.upsert({
+        where: { email: args.data.email },
+        update: {
+          firstname: args.data.firstname,
+          lastname: args.data.lastname,
+          // you might update other fields if needed
+        },
+        create: {
+          email: args.data.email,
+          firstname: args.data.firstname,
+          lastname: args.data.lastname,
+          username,
+          role: defaultRole,
+          password: "", // or generate random hash if required
+        },
+      });
+
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          role: "USER", // distinguish guest from full user
+        },
+        process.env.JWT_SECRET!,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      return { user, token };
+    },
     updateUser: (
       _parent: unknown,
       args: { id: string; data: Partial<CreateUserArgs> },
@@ -108,50 +157,55 @@ export const userResolvers = {
       args: { data: { email: string; password: string } },
       context: { res: NextApiResponse }
     ) => {
-      const user = await prisma.user.findUnique({
-        where: {
-          email: args.data.email,
-        },
-      });
+      try {
+        const user = await prisma.user.findUnique({
+          where: {
+            email: args.data.email,
+          },
+        });
 
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const isValid = await bcrypt.compare(args.data.password, user.password);
-
-      if (!isValid) {
-        throw new Error("Invalid password");
-      }
-
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          role: "user", // distinguish guest from full user
-        },
-        process.env.JWT_SECRET!,
-        {
-          expiresIn: "1h",
+        if (!user) {
+          throw new Error("User not found");
         }
-      );
 
-      // browser blocking
-      // context.res.setHeader(
-      //   "Set-Cookie",
-      //   serialize("token", token, {
-      //     httpOnly: true,
-      //     secure: process.env.NODE_ENV === "production", // true in production
-      //     // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-      //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
-      //     maxAge: 60 * 60, // 1 hour
-      //     path: "/",
-      //   })
-      // );
+        const isValid = await bcrypt.compare(args.data.password, user.password);
 
-      return {
-        user,
-        token,
-      };
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
+        const token = jwt.sign(
+          {
+            userId: user.id,
+            role: "USER", // distinguish guest from full user
+          },
+          process.env.JWT_SECRET!,
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        // browser blocking
+        // context.res.setHeader(
+        //   "Set-Cookie",
+        //   serialize("token", token, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production", // true in production
+        //     // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
+        //     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
+        //     maxAge: 60 * 60, // 1 hour
+        //     path: "/",
+        //   })
+        // );
+
+        return {
+          user,
+          token,
+        };
+      } catch (error) {
+        console.error("Login error:", error);
+        throw new Error("Login failed");
+      }
     },
 
     loginGuest: async (

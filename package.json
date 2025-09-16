@@ -23,7 +23,8 @@
   "homepage": "https://github.com/cesperon4/sr_portal_graphql_api#readme",
   "dependencies": {
     "@apollo/server": "^4.12.0",
-    "@prisma/client": "^6.8.2",
+    "@auth/prisma-adapter": "^2.10.0",
+    "@prisma/client": "^6.16.0",
     "apollo-server-micro": "^3.13.0",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
@@ -31,6 +32,7 @@
     "graphql": "^16.11.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.3.2",
+    "next-auth": "^4.24.11",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

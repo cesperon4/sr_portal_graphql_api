@@ -37,6 +37,12 @@ export const userTypeDefs = gql`
     role: Role!
   }
 
+  input UpsertUserInput {
+    email: String!
+    firstname: String!
+    lastname: String!
+  }
+
   input UpdateUserInput {
     firstname: String
     lastname: String
@@ -62,6 +68,7 @@ export const userTypeDefs = gql`
   type Mutation {
     createUser(data: CreateUserInput): User!
     updateUser(id: ID!, data: UpdateUserInput): User!
+    upsertUser(data: UpsertUserInput): AuthPayload!
     deleteUser(id: ID!): User!
     login(data: LoginInput): AuthPayload!
     loginGuest: GuestPayload!
