@@ -14,6 +14,40 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
+  "query": "mutation ResendVerificationEmail($email: String!) { resendVerificationEmail(email: $email) }",
+  "variables": {
+    "email": "johns.doe@example.com"
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
+
+
+{
+  "query": "mutation { registerUser(data: { firstname: \"Christian\", lastname: \"Esperon\", username: \"cesperon\", email: \"cesperon4@gmail.com\", password: \"test123\", role:USER }) }"
+}
+
+######
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+{
+  "query": "mutation VerifyEmail($token: Token!) { verifyEmail(token: $token) }",
+  "variables": {
+    "token": "311e2888a9f9a57b861b53f4d5845c03e85a65e31437696d89b60dad5679dfb7"
+  }
+}
+
+
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
   "query": "query GetUser($id: ID!) { user(id: $id) { id firstname lastname email username createdAt updatedAt } }",
   "variables": {
     "id": "cmag3cjpx0000i7tceu14nxhg"
@@ -30,13 +64,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 }
 
 ######
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
 
 {
-  "query": "mutation { upsertUser(data: { firstname: \"Joh\", lastname: \"Does\", email: \"john.does@example.com\"}) { email} }"
+  "query": "mutation { upsertUser(data: { firstname: \"Johss\", lastname: \"Does\", email: \"johnss.does@example.com\"}) { token } }"
 }
 
 ######
@@ -51,7 +85,7 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "mutation { deleteUser(id: \"cmahfd8t00000i7ac6ydts9lh\") { id firstname lastname email username createdAt updatedAt } }"
+  "query": "mutation { deleteUser(id: \"cmfr3cevw0000mn50ft11ky9f\") { id firstname lastname email username createdAt updatedAt } }"
 }
 
 ####
