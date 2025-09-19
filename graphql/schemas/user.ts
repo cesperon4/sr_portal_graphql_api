@@ -2,6 +2,7 @@ import { gql } from "apollo-server-micro";
 
 export const userTypeDefs = gql`
   scalar Token
+  scalar DateTime
 
   enum Role {
     USER
@@ -19,6 +20,17 @@ export const userTypeDefs = gql`
     createdAt: DateTime
     updatedAt: DateTime
     posts: [Post]
+    emailVerified: DateTime
+    emailVerificationTokens: [EmailVerificationToken]
+  }
+
+  type EmailVerificationToken {
+    id: ID
+    tokenHash: String
+    userId: String
+    expires: DateTime
+    used: Boolean
+    createdAt: DateTime
   }
 
   type Query {
@@ -66,7 +78,9 @@ export const userTypeDefs = gql`
   }
 
   type Mutation {
-    createUser(data: CreateUserInput): User!
+    registerUser(data: CreateUserInput): Boolean!
+    verifyEmail(token: Token!): Boolean!
+    resendVerificationEmail(email: String!): Boolean!
     updateUser(id: ID!, data: UpdateUserInput): User!
     upsertUser(data: UpsertUserInput): AuthPayload!
     deleteUser(id: ID!): User!

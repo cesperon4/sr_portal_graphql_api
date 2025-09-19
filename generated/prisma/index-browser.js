@@ -133,19 +133,13 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified'
 };
 
-exports.Prisma.AccountScalarFieldEnum = {
+exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
   id: 'id',
+  tokenHash: 'tokenHash',
   userId: 'userId',
-  type: 'type',
-  provider: 'provider',
-  providerAccountId: 'providerAccountId'
-};
-
-exports.Prisma.SessionScalarFieldEnum = {
-  id: 'id',
-  sessionToken: 'sessionToken',
-  userId: 'userId',
-  expires: 'expires'
+  expires: 'expires',
+  used: 'used',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.PostScalarFieldEnum = {
@@ -218,8 +212,7 @@ exports.Role = exports.$Enums.Role = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  Account: 'Account',
-  Session: 'Session',
+  EmailVerificationToken: 'EmailVerificationToken',
   Post: 'Post',
   PostComment: 'PostComment',
   ArrestLog: 'ArrestLog'
