@@ -20,7 +20,7 @@ Content-Type: application/json
   }
 }
 ######
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
@@ -31,14 +31,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 
 ######
 ######
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 {
   "query": "mutation VerifyEmail($token: Token!) { verifyEmail(token: $token) }",
   "variables": {
-    "token": "311e2888a9f9a57b861b53f4d5845c03e85a65e31437696d89b60dad5679dfb7"
+    "token": "23c0bd8ea82e2d05b2cd4dd7ab5a468327405ff804acaf36990d3e9082e060b7"
   }
 }
 
@@ -85,7 +85,7 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "mutation { deleteUser(id: \"cmfr3cevw0000mn50ft11ky9f\") { id firstname lastname email username createdAt updatedAt } }"
+  "query": "mutation { deleteUser(id: \"cmfrraoq70003mnj6xvykv9ky\") { id firstname lastname email username createdAt updatedAt } }"
 }
 
 ####

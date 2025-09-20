@@ -108,8 +108,6 @@ export const userResolvers = {
     verifyEmail: async (_parent: unknown, args: { token: string }) => {
       const { token } = args;
 
-      console.log("token: ", token);
-
       const emailVerificationToken =
         await prisma.emailVerificationToken.findUnique({
           where: { tokenHash: hashToken(token) },
