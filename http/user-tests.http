@@ -7,7 +7,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
 {
-  "query": "query { users { id firstname lastname email username createdAt updatedAt password } }"
+  "query": "query { users { id firstname lastname email username createdAt updatedAt password emailVerified } }"
 }
 ######
 POST http://localhost:3000/api/graphql
@@ -85,7 +85,7 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "mutation { deleteUser(id: \"cmfrraoq70003mnj6xvykv9ky\") { id firstname lastname email username createdAt updatedAt } }"
+  "query": "mutation { deleteUser(id: \"cmfrzrj7t0009mnu50zskieil\") { id firstname lastname email username createdAt updatedAt } }"
 }
 
 ####
@@ -94,7 +94,7 @@ Content-Type: application/json
 
 
 {
-  "query": "mutation {login(data:{email: \"johns.doe@example.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####
