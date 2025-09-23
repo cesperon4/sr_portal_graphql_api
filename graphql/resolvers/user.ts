@@ -9,6 +9,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { hashToken, createVerificationToken } from "../../helpers/verification";
 import { sendVerificationEmail } from "../../helpers/mailer";
 
+import { redis } from "../../lib/redis";
+
 const prisma = new PrismaClient();
 
 type User = Awaited<ReturnType<typeof prisma.user.findUnique>>;
@@ -21,6 +23,9 @@ type CreateUserArgs = {
   role: "USER" | "GUEST";
   password: string;
 };
+
+const COOLDOWN_SECONDS = 60;
+const DAILY_LIMIT = 5;
 
 export const userResolvers = {
   Query: {
@@ -143,6 +148,30 @@ export const userResolvers = {
 
       if (!user) throw new Error("No account for that email");
       if (user.emailVerified) return true;
+
+      const cooldownKey = `resend:cooldown:${user.id}`;
+      const dailyKey = `resend:daily:${user.id}:${new Date()
+        .toISOString()
+        .slice(0, 10)}`;
+
+      // Check cooldown
+      const ttl = await redis.ttl(cooldownKey);
+      console.log("ttl: ", ttl);
+      if (ttl > 0) {
+        throw new Error(`Please wait ${ttl}s before requesting again`);
+      }
+
+      // Check daily limit
+      const count = await redis.incr(dailyKey);
+      if (count === 1) {
+        await redis.expire(dailyKey, 24 * 60 * 60); // expire in 24h
+      }
+      if (count > DAILY_LIMIT) {
+        throw new Error("Daily resend limit reached");
+      }
+
+      // Set cooldown
+      await redis.set(cooldownKey, "1", "EX", COOLDOWN_SECONDS);
 
       const { raw, hash } = createVerificationToken();
       const expires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h
