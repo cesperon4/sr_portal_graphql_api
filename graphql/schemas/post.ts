@@ -14,6 +14,7 @@ export const postTypeDefs = gql`
     user: User
     postComments: [PostComment]
     arrestLog: ArrestLog
+    imageUrl: String
   }
 
   type Query {
@@ -26,6 +27,8 @@ export const postTypeDefs = gql`
     body: String
     userId: ID
     arrestLogId: ID
+    imageBase64: String
+    imageName: String
   }
 
   input UpdatePostInput {

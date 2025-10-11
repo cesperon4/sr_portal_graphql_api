@@ -1,23 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider   = "prisma-client-js"
   output     = "../generated/prisma"
-  engineType = "binary" // 👈 add this line for prisma >=6
+  engineType = "binary"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  USER
-  GUEST
 }
 
 model User {
@@ -30,14 +19,14 @@ model User {
   password                String
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
-  posts                   Post[]
   emailVerified           DateTime?
   emailVerificationTokens EmailVerificationToken[]
+  posts                   Post[]
 }
 
 model EmailVerificationToken {
   id        String   @id @default(cuid())
-  tokenHash String   @unique // SHA256 of token
+  tokenHash String   @unique
   userId    String
   expires   DateTime
   used      Boolean  @default(false)
@@ -53,18 +42,19 @@ model Post {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   arrestLogId  Int?
+  arrestLog    ArrestLog?
   user         User          @relation(fields: [userId], references: [id])
   postComments PostComment[]
-  arrestLog    ArrestLog?
+  imageUrl     String? // URL of the uploaded image
 }
 
 model PostComment {
   id        Int      @id @default(autoincrement())
   postId    Int
   body      String
-  post      Post     @relation(fields: [postId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 model ArrestLog {
@@ -94,7 +84,12 @@ model ArrestLog {
   TIME_ARREST             String?
   UNIQUEKEY               String?  @unique
   postId                  Int      @unique
-  post                    Post?    @relation(fields: [postId], references: [id])
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+  post                    Post     @relation(fields: [postId], references: [id])
+}
+
+enum Role {
+  USER
+  GUEST
 }

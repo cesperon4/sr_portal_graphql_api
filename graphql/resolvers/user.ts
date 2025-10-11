@@ -156,7 +156,6 @@ export const userResolvers = {
 
       // Check cooldown
       const ttl = await redis.ttl(cooldownKey);
-      console.log("ttl: ", ttl);
       if (ttl > 0) {
         throw new Error(`Please wait ${ttl}s before requesting again`);
       }

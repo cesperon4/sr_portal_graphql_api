@@ -1,14 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
-  engineType = "binary"               // 👈 add this line for prisma >=6
-
+  provider   = "prisma-client-js"
+  output     = "../generated/prisma"
+  engineType = "binary"
 }
 
 datasource db {
@@ -16,88 +9,87 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER 
-  GUEST 
-}
-
 model User {
-  id        String   @id @default(cuid())
-  firstname      String
-  lastname       String
-  username   String  @unique
-  email     String  @unique
-  role Role
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  posts Post[]
-  emailVerified DateTime?
+  id                      String                   @id @default(cuid())
+  firstname               String
+  lastname                String
+  username                String                   @unique
+  email                   String                   @unique
+  role                    Role
+  password                String
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  emailVerified           DateTime?
   emailVerificationTokens EmailVerificationToken[]
+  posts                   Post[]
 }
 
 model EmailVerificationToken {
   id        String   @id @default(cuid())
-  tokenHash String   @unique   // SHA256 of token
+  tokenHash String   @unique
   userId    String
   expires   DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model Post {
-  id           Int       @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   title        String
-  body         String   
-  userId      String 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  arrestLogId Int?     
-  user        User      @relation(fields: [userId], references: [id])
+  body         String
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  arrestLogId  Int?
+  arrestLog    ArrestLog?
+  user         User          @relation(fields: [userId], references: [id])
   postComments PostComment[]
-  arrestLog ArrestLog?
+  imageUrl     String?       // URL of the uploaded image
 }
 
 model PostComment {
-  id      Int    @id @default(autoincrement())
-  postId Int
-  body    String 
-  post    Post   @relation(fields: [postId], references: [id])
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  body      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id])
 }
 
 model ArrestLog {
-  id                      Int     @id @default(autoincrement())
-  AGE                    String?
-  ARREST_STATUS          String?
-  ArrestLocationAptFlr   String?
-  ArrestLocationCity     String?
-  ArrestLocationStreet   String?
+  id                      Int      @id @default(autoincrement())
+  AGE                     String?
+  ARREST_STATUS           String?
+  ArrestLocationAptFlr    String?
+  ArrestLocationCity      String?
+  ArrestLocationStreet    String?
   ArrestLocationStreetNBR String?
-  Arrest_Charge          String?
-  Arrest_ID              String?
-  Case_Number            String?
-  Charge_Description     String?
-  Charge_Sequence        String?
-  DATE_ARRESTED          String?
-  DOB                    String?
-  Degree                 String?
-  FIRSTNAME              String?
-  LASTNAME               String?
-  MIDDLENAME             String?
-  OBJECTID               Int?
-  OBJECTID_1             Int?
-  RACE                   String?
-  SEX                    String?
-  SUFFIX                 String?
-  TIME_ARREST            String?
-  UNIQUEKEY              String?  @unique
-  postId Int @unique
-  post    Post?   @relation(fields: [postId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  Arrest_Charge           String?
+  Arrest_ID               String?
+  Case_Number             String?
+  Charge_Description      String?
+  Charge_Sequence         String?
+  DATE_ARRESTED           String?
+  DOB                     String?
+  Degree                  String?
+  FIRSTNAME               String?
+  LASTNAME                String?
+  MIDDLENAME              String?
+  OBJECTID                Int?
+  OBJECTID_1              Int?
+  RACE                    String?
+  SEX                     String?
+  SUFFIX                  String?
+  TIME_ARREST             String?
+  UNIQUEKEY               String?  @unique
+  postId                  Int      @unique
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  post                    Post     @relation(fields: [postId], references: [id])
 }
 
+enum Role {
+  USER
+  GUEST
+}

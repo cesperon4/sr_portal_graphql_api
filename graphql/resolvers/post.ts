@@ -1,6 +1,6 @@
 import { PrismaClient } from "../../generated/prisma/client";
 import { requireAuth } from "helpers/auth";
-// import { Post } from "@prisma/client";
+import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 
 const prisma = new PrismaClient();
 type Post = Awaited<ReturnType<typeof prisma.post.findUnique>>;
@@ -10,11 +10,13 @@ interface CreatePostArgs {
   body: string;
   userId: string;
   arrestLogId: number | null;
+  imageBase64?: string; // Optional field for base64 image data
+  imageName?: string; // Optional field for image name
 }
 export const postResolvers = {
   Query: {
     posts: async (_parent: unknown, args: {}, context: any) => {
-      return prisma.post.findMany();
+      return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
     },
     post: async (_parent: unknown, args: { id: number }, context: any) => {
       // requireAuth(context); // ⛔ block if not authenticated
@@ -33,7 +35,34 @@ export const postResolvers = {
       context: any
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
+      let imageUrl: string | null = null;
 
+      // 1️⃣ Upload image if provided
+      if (args.data.imageBase64 && args.data.imageName) {
+        const fileName = `images/${Date.now()}-${args.data.imageName}`;
+        const base64String = args.data.imageBase64.includes(",") //if comma, remove data:image/jpeg;base64,
+          ? args.data.imageBase64.split(",")[1]
+          : args.data.imageBase64;
+
+        const { data: uploadData, error: uploadError } =
+          await supabaseAdmin.storage
+            .from("images") // your bucket name
+            .upload(fileName, Buffer.from(base64String, "base64"), {
+              contentType: "image/jpeg", // optionally use args.data.type if available
+              upsert: false,
+            });
+
+        if (uploadError)
+          throw new Error(`Image upload failed: ${uploadError.message}`);
+
+        // 2️⃣ Get the public URL of the uploaded image
+        const { data: publicData } = supabaseAdmin.storage
+          .from("images")
+          .getPublicUrl(fileName);
+        imageUrl = publicData.publicUrl;
+      }
+
+      console.log("imageUrl:", imageUrl);
       return prisma.post.create({
         data: {
           title: args.data.title,
@@ -42,6 +71,7 @@ export const postResolvers = {
           arrestLogId: args.data.arrestLogId,
           createdAt: new Date(),
           updatedAt: new Date(),
+          imageUrl,
         },
       });
     },

@@ -4,7 +4,6 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
 {
   "query": "query { users { id firstname lastname email username createdAt updatedAt password emailVerified } }"
@@ -50,7 +49,7 @@ Content-Type: application/json
 {
   "query": "query GetUser($id: ID!) { user(id: $id) { id firstname lastname email username createdAt updatedAt } }",
   "variables": {
-    "id": "cmag3cjpx0000i7tceu14nxhg"
+    "id": "cmghh4hul0000mnarlu1tlyqv"
   }
 }
 ######
