@@ -131,6 +131,7 @@ export const postResolvers = {
     postComments: (parent: Post, _args: {}) => {
       return prisma.postComment.findMany({
         where: { postId: parent?.id },
+        orderBy: { updatedAt: "desc" },
       });
     },
     arrestLog: (parent: Post, _args: {}) => {
