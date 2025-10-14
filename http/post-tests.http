@@ -1,11 +1,13 @@
 ######post#### https://sr-portal-graphql-api.vercel.app
 POST http://localhost:3000/api/graphql
-Content-Type: application/json 
+Content-Type: application/json
 
 {
-  "query": "query { posts { id title body userId createdAt updatedAt arrestLogId imageUrl user{ id, username } postComments{ id } arrestLog{ id } } }"
+  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { posts { id title body userId createdAt updatedAt arrestLogId imageUrl } cursor } }",
+  "variables": { "limit": 5, "cursor": null }
 }
-######
+
+#####
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
 

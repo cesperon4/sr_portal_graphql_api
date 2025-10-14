@@ -13,10 +13,37 @@ interface CreatePostArgs {
   imageBase64?: string; // Optional field for base64 image data
   imageName?: string; // Optional field for image name
 }
+
+interface PostsArgs {
+  limit: number;
+  cursor?: number;
+}
 export const postResolvers = {
   Query: {
-    posts: async (_parent: unknown, args: {}, context: any) => {
-      return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
+    posts: async (
+      _parent: unknown,
+      args: { data: PostsArgs },
+      context: any
+    ) => {
+      const { limit, cursor } = args.data;
+
+      const posts = await prisma.post.findMany({
+        take: limit + 1, // fetch one extra to check if there's a next page
+        orderBy: { createdAt: "desc" },
+        ...(cursor
+          ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
+          : {}),
+      });
+
+      const hasNextPage = posts.length > limit;
+      const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
+
+      return {
+        posts: slicedPosts,
+        cursor: hasNextPage ? slicedPosts[slicedPosts.length - 1].id : null,
+        hasNextPage,
+      };
+      // return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
     },
     post: async (_parent: unknown, args: { id: number }, context: any) => {
       // requireAuth(context); // ⛔ block if not authenticated
@@ -62,7 +89,6 @@ export const postResolvers = {
         imageUrl = publicData.publicUrl;
       }
 
-      console.log("imageUrl:", imageUrl);
       return prisma.post.create({
         data: {
           title: args.data.title,

@@ -17,8 +17,19 @@ export const postTypeDefs = gql`
     imageUrl: String
   }
 
-  type Query {
+  input PostsInput {
+    limit: Int!
+    cursor: Int
+  }
+
+  type PostsResponse {
     posts: [Post!]!
+    cursor: Int
+    hasNextPage: Boolean!
+  }
+
+  type Query {
+    posts(data: PostsInput): PostsResponse!
     post(id: ID!): Post!
   }
 
