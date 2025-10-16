@@ -3,8 +3,8 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { posts { id title body userId createdAt updatedAt arrestLogId imageUrl } cursor hasNextPage } }",
-  "variables": { "limit": 5, "cursor": 7 }
+  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { posts { id title body userId createdAt updatedAt arrestLogId imageUrls } cursor hasNextPage } }",
+  "variables": { "limit": 5, "cursor": null }
 }
 
 #####

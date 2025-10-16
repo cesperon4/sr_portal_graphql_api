@@ -7,6 +7,7 @@ type PostComment = Awaited<ReturnType<typeof prisma.postComment.findUnique>>;
 
 interface CreatePostArgs {
   postId: number;
+  userId: string;
   body: string;
 }
 export const postCommentResolvers = {
@@ -39,6 +40,7 @@ export const postCommentResolvers = {
       return prisma.postComment.create({
         data: {
           postId: Number(args.data.postId),
+          userId: args.data.userId,
           body: args.data.body,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -71,6 +73,11 @@ export const postCommentResolvers = {
     },
   },
   PostComment: {
+    user: (parent: PostComment, _args: {}) => {
+      return prisma.user.findUnique({
+        where: { id: parent?.userId },
+      });
+    },
     post: (parent: PostComment, _args: {}) => {
       return prisma.post.findUnique({
         where: { id: Number(parent?.postId) },

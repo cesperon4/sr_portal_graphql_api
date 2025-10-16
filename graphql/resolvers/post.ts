@@ -10,8 +10,8 @@ interface CreatePostArgs {
   body: string;
   userId: string;
   arrestLogId: number | null;
-  imageBase64?: string; // Optional field for base64 image data
-  imageName?: string; // Optional field for image name
+  imageBase64: string[]; // Optional field for base64 image data
+  imageName: string[]; // Optional field for image name
 }
 
 interface PostsArgs {
@@ -62,31 +62,40 @@ export const postResolvers = {
       context: any
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
-      let imageUrl: string | null = null;
+      let imageUrls: string[] = [];
 
       // 1️⃣ Upload image if provided
-      if (args.data.imageBase64 && args.data.imageName) {
-        const fileName = `images/${Date.now()}-${args.data.imageName}`;
-        const base64String = args.data.imageBase64.includes(",") //if comma, remove data:image/jpeg;base64,
-          ? args.data.imageBase64.split(",")[1]
-          : args.data.imageBase64;
+      // 1️⃣ Upload images if provided
+      if (args.data.imageBase64?.length > 0) {
+        const uploadPromises = args.data.imageBase64.map(
+          async (base64, index) => {
+            const fileName = `images/${Date.now()}-${
+              args.data.imageName[index]
+            }`;
+            const base64String = base64.includes(",")
+              ? base64.split(",")[1]
+              : base64;
 
-        const { data: uploadData, error: uploadError } =
-          await supabaseAdmin.storage
-            .from("images") // your bucket name
-            .upload(fileName, Buffer.from(base64String, "base64"), {
-              contentType: "image/jpeg", // optionally use args.data.type if available
-              upsert: false,
-            });
+            const { error: uploadError } = await supabaseAdmin.storage
+              .from("images")
+              .upload(fileName, Buffer.from(base64String, "base64"), {
+                contentType: "image/jpeg",
+                upsert: false,
+              });
 
-        if (uploadError)
-          throw new Error(`Image upload failed: ${uploadError.message}`);
+            if (uploadError)
+              throw new Error(`Image upload failed: ${uploadError.message}`);
 
-        // 2️⃣ Get the public URL of the uploaded image
-        const { data: publicData } = supabaseAdmin.storage
-          .from("images")
-          .getPublicUrl(fileName);
-        imageUrl = publicData.publicUrl;
+            const { data: publicData } = supabaseAdmin.storage
+              .from("images")
+              .getPublicUrl(fileName);
+
+            return publicData.publicUrl;
+          }
+        );
+
+        // Wait for all uploads to complete
+        imageUrls = await Promise.all(uploadPromises);
       }
 
       return prisma.post.create({
@@ -97,7 +106,7 @@ export const postResolvers = {
           arrestLogId: args.data.arrestLogId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          imageUrl,
+          imageUrls,
         },
       });
     },

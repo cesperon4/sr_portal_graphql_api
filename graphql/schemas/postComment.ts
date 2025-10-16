@@ -4,6 +4,7 @@ export const postCommentTypeDefs = gql`
   type PostComment {
     id: ID
     postId: ID
+    user: User
     body: String
     post: Post
     createdAt: DateTime
@@ -17,6 +18,7 @@ export const postCommentTypeDefs = gql`
 
   input CreatePostCommentInput {
     postId: ID
+    userId: ID
     body: String
   }
 

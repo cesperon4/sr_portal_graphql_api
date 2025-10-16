@@ -46,7 +46,7 @@ model Post {
   arrestLog    ArrestLog?
   user         User          @relation(fields: [userId], references: [id])
   postComments PostComment[]
-  imageUrl     String? // URL of the uploaded image
+  imageUrls    String[] // URL of the uploaded image
 }
 
 model PostComment {

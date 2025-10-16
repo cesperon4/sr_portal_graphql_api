@@ -14,7 +14,7 @@ export const postTypeDefs = gql`
     user: User
     postComments: [PostComment]
     arrestLog: ArrestLog
-    imageUrl: String
+    imageUrls: [String]
   }
 
   input PostsInput {
@@ -38,8 +38,8 @@ export const postTypeDefs = gql`
     body: String
     userId: ID
     arrestLogId: ID
-    imageBase64: String
-    imageName: String
+    imageBase64: [String]
+    imageName: [String]
   }
 
   input UpdatePostInput {

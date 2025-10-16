@@ -3608,7 +3608,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     arrestLogId: number | null
-    imageUrl: string | null
   }
 
   export type PostMaxAggregateOutputType = {
@@ -3619,7 +3618,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     arrestLogId: number | null
-    imageUrl: string | null
   }
 
   export type PostCountAggregateOutputType = {
@@ -3630,7 +3628,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     arrestLogId: number
-    imageUrl: number
+    imageUrls: number
     _all: number
   }
 
@@ -3653,7 +3651,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     arrestLogId?: true
-    imageUrl?: true
   }
 
   export type PostMaxAggregateInputType = {
@@ -3664,7 +3661,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     arrestLogId?: true
-    imageUrl?: true
   }
 
   export type PostCountAggregateInputType = {
@@ -3675,7 +3671,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     arrestLogId?: true
-    imageUrl?: true
+    imageUrls?: true
     _all?: true
   }
 
@@ -3773,7 +3769,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     arrestLogId: number | null
-    imageUrl: string | null
+    imageUrls: string[]
     _count: PostCountAggregateOutputType | null
     _avg: PostAvgAggregateOutputType | null
     _sum: PostSumAggregateOutputType | null
@@ -3803,7 +3799,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     arrestLogId?: boolean
-    imageUrl?: boolean
+    imageUrls?: boolean
     arrestLog?: boolean | Post$arrestLogArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
     postComments?: boolean | Post$postCommentsArgs<ExtArgs>
@@ -3818,7 +3814,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     arrestLogId?: boolean
-    imageUrl?: boolean
+    imageUrls?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
@@ -3830,7 +3826,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     arrestLogId?: boolean
-    imageUrl?: boolean
+    imageUrls?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["post"]>
 
@@ -3842,10 +3838,10 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     arrestLogId?: boolean
-    imageUrl?: boolean
+    imageUrls?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrl", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrls", ExtArgs["result"]["post"]>
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     arrestLog?: boolean | Post$arrestLogArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3874,7 +3870,7 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       arrestLogId: number | null
-      imageUrl: string | null
+      imageUrls: string[]
     }, ExtArgs["result"]["post"]>
     composites: {}
   }
@@ -4308,7 +4304,7 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Post", 'DateTime'>
     readonly updatedAt: FieldRef<"Post", 'DateTime'>
     readonly arrestLogId: FieldRef<"Post", 'Int'>
-    readonly imageUrl: FieldRef<"Post", 'String'>
+    readonly imageUrls: FieldRef<"Post", 'String[]'>
   }
     
 
@@ -7336,7 +7332,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     arrestLogId: 'arrestLogId',
-    imageUrl: 'imageUrl'
+    imageUrls: 'imageUrls'
   };
 
   export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
@@ -7654,7 +7650,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     arrestLogId?: IntNullableFilter<"Post"> | number | null
-    imageUrl?: StringNullableFilter<"Post"> | string | null
+    imageUrls?: StringNullableListFilter<"Post">
     arrestLog?: XOR<ArrestLogNullableScalarRelationFilter, ArrestLogWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     postComments?: PostCommentListRelationFilter
@@ -7668,7 +7664,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     arrestLogId?: SortOrderInput | SortOrder
-    imageUrl?: SortOrderInput | SortOrder
+    imageUrls?: SortOrder
     arrestLog?: ArrestLogOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
     postComments?: PostCommentOrderByRelationAggregateInput
@@ -7685,7 +7681,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     arrestLogId?: IntNullableFilter<"Post"> | number | null
-    imageUrl?: StringNullableFilter<"Post"> | string | null
+    imageUrls?: StringNullableListFilter<"Post">
     arrestLog?: XOR<ArrestLogNullableScalarRelationFilter, ArrestLogWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     postComments?: PostCommentListRelationFilter
@@ -7699,7 +7695,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     arrestLogId?: SortOrderInput | SortOrder
-    imageUrl?: SortOrderInput | SortOrder
+    imageUrls?: SortOrder
     _count?: PostCountOrderByAggregateInput
     _avg?: PostAvgOrderByAggregateInput
     _max?: PostMaxOrderByAggregateInput
@@ -7718,7 +7714,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     arrestLogId?: IntNullableWithAggregatesFilter<"Post"> | number | null
-    imageUrl?: StringNullableWithAggregatesFilter<"Post"> | string | null
+    imageUrls?: StringNullableListFilter<"Post">
   }
 
   export type PostCommentWhereInput = {
@@ -8129,7 +8125,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogCreateNestedOneWithoutPostInput
     user: UserCreateNestedOneWithoutPostsInput
     postComments?: PostCommentCreateNestedManyWithoutPostInput
@@ -8143,7 +8139,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedCreateNestedOneWithoutPostInput
     postComments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
@@ -8154,7 +8150,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUpdateOneWithoutPostNestedInput
     user?: UserUpdateOneRequiredWithoutPostsNestedInput
     postComments?: PostCommentUpdateManyWithoutPostNestedInput
@@ -8168,7 +8164,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedUpdateOneWithoutPostNestedInput
     postComments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
   }
@@ -8181,7 +8177,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
   }
 
   export type PostUpdateManyMutationInput = {
@@ -8190,7 +8186,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
   }
 
   export type PostUncheckedUpdateManyInput = {
@@ -8201,7 +8197,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
   }
 
   export type PostCommentCreateInput = {
@@ -8716,19 +8712,12 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
   }
 
   export type ArrestLogNullableScalarRelationFilter = {
@@ -8744,7 +8733,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     arrestLogId?: SortOrder
-    imageUrl?: SortOrder
+    imageUrls?: SortOrder
   }
 
   export type PostAvgOrderByAggregateInput = {
@@ -8760,7 +8749,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     arrestLogId?: SortOrder
-    imageUrl?: SortOrder
   }
 
   export type PostMinOrderByAggregateInput = {
@@ -8771,7 +8759,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     arrestLogId?: SortOrder
-    imageUrl?: SortOrder
   }
 
   export type PostSumOrderByAggregateInput = {
@@ -8809,24 +8796,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type PostScalarRelationFilter = {
@@ -8869,6 +8838,21 @@ export namespace Prisma {
   export type PostCommentSumOrderByAggregateInput = {
     id?: SortOrder
     postId?: SortOrder
+  }
+
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type ArrestLogCountOrderByAggregateInput = {
@@ -8976,6 +8960,24 @@ export namespace Prisma {
     OBJECTID?: SortOrder
     OBJECTID_1?: SortOrder
     postId?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type EmailVerificationTokenCreateNestedManyWithoutUserInput = {
@@ -9138,6 +9140,10 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEmailVerificationTokensInput, UserUpdateWithoutEmailVerificationTokensInput>, UserUncheckedUpdateWithoutEmailVerificationTokensInput>
   }
 
+  export type PostCreateimageUrlsInput = {
+    set: string[]
+  }
+
   export type ArrestLogCreateNestedOneWithoutPostInput = {
     create?: XOR<ArrestLogCreateWithoutPostInput, ArrestLogUncheckedCreateWithoutPostInput>
     connectOrCreate?: ArrestLogCreateOrConnectWithoutPostInput
@@ -9178,8 +9184,9 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
+  export type PostUpdateimageUrlsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type ArrestLogUpdateOneWithoutPostNestedInput = {
@@ -9278,6 +9285,10 @@ export namespace Prisma {
     create?: XOR<PostCreateWithoutArrestLogInput, PostUncheckedCreateWithoutArrestLogInput>
     connectOrCreate?: PostCreateOrConnectWithoutArrestLogInput
     connect?: PostWhereUniqueInput
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type PostUpdateOneRequiredWithoutArrestLogNestedInput = {
@@ -9421,20 +9432,6 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -9489,6 +9486,20 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -9538,7 +9549,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogCreateNestedOneWithoutPostInput
     postComments?: PostCommentCreateNestedManyWithoutPostInput
   }
@@ -9550,7 +9561,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedCreateNestedOneWithoutPostInput
     postComments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
@@ -9645,7 +9656,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
     arrestLogId?: IntNullableFilter<"Post"> | number | null
-    imageUrl?: StringNullableFilter<"Post"> | string | null
+    imageUrls?: StringNullableListFilter<"Post">
   }
 
   export type PostCommentUpsertWithWhereUniqueWithoutUserInput = {
@@ -10009,7 +10020,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogCreateNestedOneWithoutPostInput
     user: UserCreateNestedOneWithoutPostsInput
   }
@@ -10022,7 +10033,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedCreateNestedOneWithoutPostInput
   }
 
@@ -10083,7 +10094,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUpdateOneWithoutPostNestedInput
     user?: UserUpdateOneRequiredWithoutPostsNestedInput
   }
@@ -10096,7 +10107,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedUpdateOneWithoutPostNestedInput
   }
 
@@ -10147,7 +10158,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     user: UserCreateNestedOneWithoutPostsInput
     postComments?: PostCommentCreateNestedManyWithoutPostInput
   }
@@ -10160,7 +10171,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
     postComments?: PostCommentUncheckedCreateNestedManyWithoutPostInput
   }
 
@@ -10186,7 +10197,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     user?: UserUpdateOneRequiredWithoutPostsNestedInput
     postComments?: PostCommentUpdateManyWithoutPostNestedInput
   }
@@ -10199,7 +10210,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     postComments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
   }
 
@@ -10218,7 +10229,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     arrestLogId?: number | null
-    imageUrl?: string | null
+    imageUrls?: PostCreateimageUrlsInput | string[]
   }
 
   export type PostCommentCreateManyUserInput = {
@@ -10259,7 +10270,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUpdateOneWithoutPostNestedInput
     postComments?: PostCommentUpdateManyWithoutPostNestedInput
   }
@@ -10271,7 +10282,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
     arrestLog?: ArrestLogUncheckedUpdateOneWithoutPostNestedInput
     postComments?: PostCommentUncheckedUpdateManyWithoutPostNestedInput
   }
@@ -10283,7 +10294,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     arrestLogId?: NullableIntFieldUpdateOperationsInput | number | null
-    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrls?: PostUpdateimageUrlsInput | string[]
   }
 
   export type PostCommentUpdateWithoutUserInput = {
