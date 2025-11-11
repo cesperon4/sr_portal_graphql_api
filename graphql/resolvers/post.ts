@@ -1,9 +1,24 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { PrismaClient, type Post } from "../../generated/prisma/client";
 import { requireAuth } from "helpers/auth";
 import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
+import { GraphQLResolveInfo } from "graphql";
+
+import { makeCacheKey, getJSON, setJSON } from "services/cache";
+import { HttpStatus, HttpMessages } from "lib/constants/http";
+import { sendResponse } from "lib/apiResponse";
+
+import { type PostsArgs } from "graphql/types/posts";
+import { type ApiResponse } from "graphql/types/response";
+import { type ContextObject } from "graphql/types/context";
 
 const prisma = new PrismaClient();
-type Post = Awaited<ReturnType<typeof prisma.post.findUnique>>;
+
+type PostPage = {
+  posts: Post[];
+  cursor: number | null;
+  hasNextPage: boolean;
+};
+// type Post = Awaited<ReturnType<typeof prisma.post.findUnique>>;
 
 interface CreatePostArgs {
   title: string;
@@ -14,35 +29,70 @@ interface CreatePostArgs {
   imageName: string[]; // Optional field for image name
 }
 
-interface PostsArgs {
-  limit: number;
-  cursor?: number;
-}
+const POSTS_TTL_MS = 30 * 1000;
+
 export const postResolvers = {
   Query: {
     posts: async (
       _parent: unknown,
       args: { data: PostsArgs },
-      context: any
-    ) => {
-      const { limit, cursor } = args.data;
+      context: ContextObject,
+      info: GraphQLResolveInfo
+    ): Promise<ApiResponse<PostPage | null>> => {
+      try {
+        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-      const posts = await prisma.post.findMany({
-        take: limit + 1, // fetch one extra to check if there's a next page
-        orderBy: { createdAt: "desc" },
-        ...(cursor
-          ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
-          : {}),
-      });
+        // if (!authenticated)
+        //   return sendResponse(
+        //     null,
+        //     HttpStatus.UNAUTHORIZED,
+        //     HttpMessages.UNAUTHORIZED
+        //   );
+        if (!args.data)
+          return sendResponse(
+            null,
+            HttpStatus.BAD_REQUEST,
+            HttpMessages.BAD_REQUEST
+          );
 
-      const hasNextPage = posts.length > limit;
-      const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
+        const { limit, cursor } = args.data;
 
-      return {
-        posts: slicedPosts,
-        cursor: hasNextPage ? slicedPosts[slicedPosts.length - 1].id : null,
-        hasNextPage,
-      };
+        const key = `gql:${info.fieldName}:${makeCacheKey(
+          info.fieldName,
+          args.data
+        )}`; //create key using field name and argumens
+        const cached = await getJSON<PostPage>(key); //get cached value as json
+        if (cached) sendResponse(cached);
+        //if it exists return cached value
+
+        const posts = await prisma.post.findMany({
+          take: limit + 1, // fetch one extra to check if there's a next page
+          orderBy: { createdAt: "desc" },
+          ...(cursor
+            ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
+            : {}),
+        });
+
+        const hasNextPage = posts.length > limit;
+        const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
+
+        const pageData = {
+          posts: slicedPosts,
+          cursor: hasNextPage ? slicedPosts[slicedPosts.length - 1].id : null,
+          hasNextPage,
+        };
+
+        await setJSON(key, pageData, POSTS_TTL_MS);
+
+        return sendResponse(pageData);
+      } catch (err) {
+        console.log(err);
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
       // return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
     },
     post: async (_parent: unknown, args: { id: number }, context: any) => {
@@ -66,6 +116,7 @@ export const postResolvers = {
 
       // 1️⃣ Upload image if provided
       // 1️⃣ Upload images if provided
+
       if (args.data.imageBase64?.length > 0) {
         const uploadPromises = args.data.imageBase64.map(
           async (base64, index) => {

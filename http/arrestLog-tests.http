@@ -1,9 +1,23 @@
 ######post
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjI0NzUxMzIsImV4cCI6MTc2MjQ3ODczMn0._1p8Nii_oXqKuCUUjJx5w7hweykWj454IcGUHtG1gwQ
 
 {
-  "query": "query { arrestLogs { id AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge postId } }"
+  "query": "query { arrestLogs { data { id AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge postId } status message } }"
+}
+######
+
+######post
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjI0NzUxMzIsImV4cCI6MTc2MjQ3ODczMn0._1p8Nii_oXqKuCUUjJx5w7hweykWj454IcGUHtG1gwQ
+
+{
+  "query": "query GetArrestLog($id: Int) { arrestLog(id: $id) { data { id AGE ARREST_STATUS ArrestLocationAptFlr ArrestLocationCity ArrestLocationStreet ArrestLocationStreetNBR Arrest_Charge postId } status message } }",
+  "variables": {
+    "id": 50
+  }
 }
 ######
 POST http://localhost:3000/api/graphql

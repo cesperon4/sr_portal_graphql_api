@@ -1,10 +1,14 @@
-import { ApolloServer } from "apollo-server-micro";
+import { ApolloServer, AuthenticationError } from "apollo-server-micro";
 import { typeDefs } from "../../graphql/schemas";
 import { resolvers } from "../../graphql/resolvers";
 import jwt from "jsonwebtoken";
 import { parse } from "cookie";
 import Cors from "cors";
 import { NextApiRequest, NextApiResponse } from "next";
+import { type ContextObject, type ContextUser } from "graphql/types/context";
+import { sendResponse } from "lib/apiResponse";
+import { HttpStatus, HttpMessages } from "lib/constants/http";
+import { type ApiResponse } from "graphql/types/response";
 
 // CORS setup
 const cors = Cors({
@@ -29,43 +33,42 @@ function runCorsMiddleware(req: NextApiRequest, res: NextApiResponse) {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req, res }) => {
-    if (!req || !res) {
-      throw new Error("Missing `req` or `res` in context.");
-    }
+  context: async ({
+    req,
+    res,
+  }: {
+    req: NextApiRequest;
+    res: NextApiResponse;
+  }): Promise<ContextObject | ApiResponse<[]>> => {
+    if (!req || !res) throw new Error("Missing req or res");
 
-    // CORS headers (still recommended in dev)
-    res.setHeader("Access-Control-Allow-Credentials", "true"); //This allows the browser to include cookies (such as your JWT token) with cross-origin requests.
+    res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader(
-      //The origin is dynamically set based on the environment (development or production). In development, it's set to http://localhost:3001 (or wherever your frontend app is running), and in production, it's set to your production domain, https://sr-portal-gamma.vercel.app.
       "Access-Control-Allow-Origin",
       process.env.NODE_ENV === "development"
         ? "http://localhost:3001"
         : "https://sr-portal-gamma.vercel.app"
     );
-    // res.setHeader("Access-Control-Allow-Headers", "Content-Type"); //This ensures that the browser can send Content-Type headers with the request, which is required for JSON and other content types.
     res.setHeader(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept"
     );
-    let user = null;
 
-    try {
-      // const cookies = parse(req.headers.cookie || "");
-      // const token = cookies.token;
+    const token = (req.headers.authorization || "").replace("Bearer ", "");
+    let user: ContextUser | null = null;
 
-      //replace cookie headers
-      const authHeader = req.headers.authorization || "";
-      const token = authHeader.replace("Bearer ", "");
-
-      if (token) {
-        user = jwt.verify(token, process.env.JWT_SECRET!);
+    if (token) {
+      try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET!);
+        user = payload as ContextUser;
+      } catch (err) {
+        return sendResponse(
+          [],
+          HttpStatus.BAD_REQUEST,
+          HttpMessages.BAD_REQUEST
+        );
       }
-    } catch (err) {
-      console.error("JWT Error:", err);
     }
-
-    console.log("user in context:", user);
 
     return { req, res, user };
   },

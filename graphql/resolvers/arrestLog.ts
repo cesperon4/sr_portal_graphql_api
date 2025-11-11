@@ -1,94 +1,158 @@
-import { PrismaClient } from "../../generated/prisma/client";
+import { PrismaClient, type ArrestLog } from "../../generated/prisma/client";
+import { type ApiResponse } from "graphql/types/response";
+import { type ContextObject } from "graphql/types/context";
 import { requireAuth } from "helpers/auth";
+import {
+  type CreateArrestLogArgs,
+  type UpdateArrestLogArgs,
+} from "graphql/types/arrestLogs";
+import { HttpStatus, HttpMessages } from "lib/constants/http";
+import { sendResponse } from "lib/apiResponse";
+import { requireArguments } from "helpers/auth";
 
 const prisma = new PrismaClient();
 
-interface CreateArrestLogArgs {
-  AGE: string;
-  ARREST_STATUS: string;
-  ArrestLocationAptFlr: string;
-  ArrestLocationCity: string;
-  ArrestLocationStreet: string;
-  ArrestLocationStreetNBR: string;
-  Arrest_Charge: string;
-  Arrest_ID: string;
-  Case_Number: string;
-  Charge_Description: string;
-  Charge_Sequence: string;
-  DATE_ARRESTED: string;
-  DOB: string;
-  Degree: string;
-  FIRSTNAME: string;
-  LASTNAME: string;
-  MIDDLENAME: string;
-  OBJECTID: number;
-  OBJECTID_1: number;
-  RACE: string;
-  SEX: string;
-  SUFFIX: string;
-  TIME_ARREST: string;
-  UNIQUEKEY: string;
-  postId: number;
-}
-
 export const arrestLogResolvers = {
   Query: {
-    arrestLogs: async (_parent: unknown, args: {}, context: any) => {
-      return prisma.arrestLog.findMany();
-    },
-    arrestLog: async (_parent: unknown, args: { id: number }, context: any) => {
-      // requireAuth(context); // ⛔ block if not authenticated
+    arrestLogs: async (
+      _parent: unknown,
+      _args: unknown,
+      context: ContextObject
+    ): Promise<ApiResponse<ArrestLog[]>> => {
+      try {
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-      return prisma.arrestLog.findUnique({
-        where: {
-          id: args.id,
-        },
-      });
+        if (!authenticated)
+          return sendResponse(
+            [],
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED
+          );
+
+        const arrest_logs = await prisma.arrestLog.findMany();
+        return sendResponse(arrest_logs);
+      } catch (err) {
+        console.log("server error arrestLogs in arrestLogs query");
+        return sendResponse(
+          [],
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
+    },
+
+    arrestLog: async (
+      _parent: unknown,
+      args: { id: number },
+      context: ContextObject
+    ): Promise<ApiResponse<ArrestLog | null>> => {
+      try {
+        // requireAuth(context); // ⛔ block if not authenticated
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
+
+        if (!authenticated)
+          return sendResponse(
+            null,
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED
+          );
+
+        if (!requireArguments(args))
+          return sendResponse(
+            null,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpMessages.INTERNAL_SERVER_ERROR
+          );
+
+        const arrest_log = await prisma.arrestLog.findUnique({
+          where: {
+            id: args.id,
+          },
+        });
+
+        return sendResponse(
+          arrest_log,
+          arrest_log ? HttpStatus.OK : HttpStatus.NOT_FOUND,
+          arrest_log ? HttpMessages.OK : HttpMessages.NOT_FOUND
+        );
+      } catch (err) {
+        console.log("server error in arrestLog query");
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
     },
   },
   Mutation: {
     createArrestLog: async (
       _parent: unknown,
-      args: { data: CreateArrestLogArgs },
-      context: any
-    ) => {
-      // requireAuth(context); // ⛔ block if not authenticated
+      args: { data: Partial<ArrestLog> },
+      context: ContextObject
+    ): Promise<ApiResponse<ArrestLog | null>> => {
+      try {
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-      return prisma.arrestLog.create({
-        data: {
-          AGE: args.data.AGE,
-          ARREST_STATUS: args.data.ARREST_STATUS,
-          ArrestLocationAptFlr: args.data.ArrestLocationAptFlr,
-          ArrestLocationCity: args.data.ArrestLocationCity,
-          ArrestLocationStreet: args.data.ArrestLocationStreet,
-          ArrestLocationStreetNBR: args.data.ArrestLocationStreetNBR,
-          Arrest_Charge: args.data.Arrest_Charge,
-          Arrest_ID: args.data.Arrest_ID,
-          Case_Number: args.data.Case_Number,
-          Charge_Description: args.data.Charge_Description,
-          Charge_Sequence: args.data.Charge_Sequence,
-          DATE_ARRESTED: args.data.DATE_ARRESTED,
-          DOB: args.data.DOB,
-          Degree: args.data.Degree,
-          FIRSTNAME: args.data.FIRSTNAME,
-          LASTNAME: args.data.LASTNAME,
-          MIDDLENAME: args.data.MIDDLENAME,
-          OBJECTID: args.data.OBJECTID,
-          OBJECTID_1: args.data.OBJECTID_1,
-          RACE: args.data.RACE,
-          SEX: args.data.SEX,
-          SUFFIX: args.data.SUFFIX,
-          TIME_ARREST: args.data.TIME_ARREST,
-          UNIQUEKEY: args.data.UNIQUEKEY,
-          postId: Number(args.data.postId),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
+        if (!authenticated)
+          return sendResponse(
+            null,
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED
+          );
+
+        if (!requireArguments(args))
+          return sendResponse(
+            null,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpMessages.INTERNAL_SERVER_ERROR
+          );
+
+        const arrest_log = await prisma.arrestLog.create({
+          data: {
+            AGE: args.data.AGE,
+            ARREST_STATUS: args.data.ARREST_STATUS,
+            ArrestLocationAptFlr: args.data.ArrestLocationAptFlr,
+            ArrestLocationCity: args.data.ArrestLocationCity,
+            ArrestLocationStreet: args.data.ArrestLocationStreet,
+            ArrestLocationStreetNBR: args.data.ArrestLocationStreetNBR,
+            Arrest_Charge: args.data.Arrest_Charge,
+            Arrest_ID: args.data.Arrest_ID,
+            Case_Number: args.data.Case_Number,
+            Charge_Description: args.data.Charge_Description,
+            Charge_Sequence: args.data.Charge_Sequence,
+            DATE_ARRESTED: args.data.DATE_ARRESTED,
+            DOB: args.data.DOB,
+            Degree: args.data.Degree,
+            FIRSTNAME: args.data.FIRSTNAME,
+            LASTNAME: args.data.LASTNAME,
+            MIDDLENAME: args.data.MIDDLENAME,
+            OBJECTID: args.data.OBJECTID,
+            OBJECTID_1: args.data.OBJECTID_1,
+            RACE: args.data.RACE,
+            SEX: args.data.SEX,
+            SUFFIX: args.data.SUFFIX,
+            TIME_ARREST: args.data.TIME_ARREST,
+            UNIQUEKEY: args.data.UNIQUEKEY,
+            postId: Number(args.data.postId),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        });
+
+        return sendResponse(arrest_log);
+      } catch (err) {
+        console.log("error in mutation create log: ", err);
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
     },
     updateArrestLog: (
       _parent: unknown,
-      args: { id: number; data: Partial<CreateArrestLogArgs> },
+      args: UpdateArrestLogArgs,
       context: any
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated

@@ -34,8 +34,8 @@ export const arrestLogTypeDefs = gql`
   }
 
   type Query {
-    arrestLogs: [ArrestLog!]!
-    arrestLog(id: ID!): ArrestLog!
+    arrestLogs: ApiArrestLogsResponse
+    arrestLog(id: Int): ApiArrestLogResponse
   }
 
   input CreateArrestLogInput {
@@ -64,6 +64,18 @@ export const arrestLogTypeDefs = gql`
     TIME_ARREST: String
     UNIQUEKEY: String
     postId: ID
+  }
+
+  type ApiArrestLogsResponse {
+    status: Int
+    data: [ArrestLog]
+    message: String
+  }
+
+  type ApiArrestLogResponse {
+    status: Int
+    data: ArrestLog
+    message: String
   }
 
   input UpdateArrestLogInput {

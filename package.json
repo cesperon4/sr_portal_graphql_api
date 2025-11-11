@@ -10,6 +10,9 @@
     "start": "next start",
     "postinstall": "prisma generate"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cesperon4/sr_portal_graphql_api.git"
@@ -31,6 +34,8 @@
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "graphql": "^16.11.0",
     "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",

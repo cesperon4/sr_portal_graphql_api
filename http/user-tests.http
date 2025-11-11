@@ -4,6 +4,7 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjI0MDcwNzQsImV4cCI6MTc2MjQxMDY3NH0.8BTzeH-Ke2pvdS0NQVNK4yTpLYZVpULzR_RVGl7ze1Q
 
 {
   "query": "query { users { id firstname lastname email username createdAt updatedAt password emailVerified } }"
@@ -25,7 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 
 
 {
-  "query": "mutation { registerUser(data: { firstname: \"Christian\", lastname: \"Esperon\", username: \"cesperon\", email: \"cesperon4@gmail.com\", password: \"test123\", role:USER }) }"
+  "query": "mutation { registerUser(data: { firstname: \"Pamela\", lastname: \"Tiongson\", username: \"ptiongson\", email: \"ptiongson@gmail.com\", password: \"test123\", role:USER }) }"
 }
 
 ######
@@ -77,7 +78,7 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "mutation { updateUser(id: \"cmag3cjpx0000i7tceu14nxhg\", data: { firstname: \"Christian\", lastname: \"Esperon\" }) { id firstname lastname email username createdAt updatedAt } }"
+  "query": "mutation { updateUser(id: \"cmhmnqsog0000js0f620gvpbc\", data: { firstname: \"Christian\", lastname: \"Esperon\", emailVerified: \"true\"}) { id firstname lastname email username createdAt updatedAt } }"
 }
 ######
 POST http://localhost:3000/api/graphql
@@ -90,15 +91,17 @@ Content-Type: application/json
 ####
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NjIzODc2MDUsImV4cCI6MTc2MjM5MTIwNX0.26hkNLuWmJiin1yxFMhgQNe-qMsKPgoCUdfONwgtGrg
 
 
 {
-  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"ptiongson@gmail.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####
 POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NjIzODc2MDUsImV4cCI6MTc2MjM5MTIwNX0.26hkNLuWmJiin1yxFMhgQNe-qMsKPgoCUdfONwgtGrg
 
 {
   "query": "mutation {logout}"

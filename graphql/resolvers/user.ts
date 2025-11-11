@@ -268,6 +268,8 @@ export const userResolvers = {
       args: { data: { email: string; password: string } },
       context: { res: NextApiResponse }
     ) => {
+      // requireAuth(context); // ⛔ block if not authenticated
+
       const user = await prisma.user.findUnique({
         where: {
           email: args.data.email,
@@ -278,9 +280,9 @@ export const userResolvers = {
         throw new Error("User not found");
       }
 
-      if (!user.emailVerified) {
-        throw new Error("Email not verified");
-      }
+      // if (!user.emailVerified) {
+      //   throw new Error("Email not verified");
+      // }
 
       const isValid = await bcrypt.compare(args.data.password, user.password);
 
@@ -324,7 +326,7 @@ export const userResolvers = {
       args: {},
       context: { res: NextApiResponse }
     ) => {
-      const token = jwt.sign({ role: "guest" }, process.env.JWT_SECRET!, {
+      const token = jwt.sign({ role: "GUEST" }, process.env.JWT_SECRET!, {
         expiresIn: "1h",
       });
 
