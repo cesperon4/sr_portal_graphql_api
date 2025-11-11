@@ -9,25 +9,32 @@ import {
 import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { sendResponse } from "lib/apiResponse";
 import { requireArguments } from "helpers/auth";
+import { makeCacheKey } from "services/cache";
+import { GraphQLResolveInfo } from "graphql";
 
 const prisma = new PrismaClient();
+
+const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const arrestLogResolvers = {
   Query: {
     arrestLogs: async (
       _parent: unknown,
       _args: unknown,
-      context: ContextObject
+      context: ContextObject,
+      info: GraphQLResolveInfo
     ): Promise<ApiResponse<ArrestLog[]>> => {
       try {
-        const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-        if (!authenticated)
-          return sendResponse(
-            [],
-            HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
-          );
+        // if (!authenticated)
+        //   return sendResponse(
+        //     [],
+        //     HttpStatus.UNAUTHORIZED,
+        //     HttpMessages.UNAUTHORIZED
+        //   );
+
+        const key = `gql:${makeCacheKey(info.fieldName, null)}`;
 
         const arrest_logs = await prisma.arrestLog.findMany();
         return sendResponse(arrest_logs);

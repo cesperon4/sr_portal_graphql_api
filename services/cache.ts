@@ -38,7 +38,6 @@ export async function invalidateByPrefix(prefix: string) {
   let count = 0;
   return new Promise<void>((resolve, reject) => {
     stream.on("data", (keys: string[]) => {
-      console.log("data: ", keys);
       if (keys.length) {
         keys.forEach((k) => pipeline.del(k));
         count += keys.length;
