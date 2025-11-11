@@ -22,10 +22,16 @@ export const postTypeDefs = gql`
     cursor: Int
   }
 
-  type PostsResponse {
+  type PostsPage {
     posts: [Post!]!
     cursor: Int
     hasNextPage: Boolean!
+  }
+
+  type PostsResponse {
+    status: Int
+    message: String
+    data: PostsPage
   }
 
   type Query {

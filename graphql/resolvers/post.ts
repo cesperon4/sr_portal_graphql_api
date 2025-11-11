@@ -3,7 +3,12 @@ import { requireAuth } from "helpers/auth";
 import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 import { GraphQLResolveInfo } from "graphql";
 
-import { makeCacheKey, getJSON, setJSON } from "services/cache";
+import {
+  makeCacheKey,
+  getJSON,
+  setJSON,
+  invalidateByPrefix,
+} from "services/cache";
 import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { sendResponse } from "lib/apiResponse";
 
@@ -29,7 +34,8 @@ interface CreatePostArgs {
   imageName: string[]; // Optional field for image name
 }
 
-const POSTS_TTL_MS = 30 * 1000;
+// const POSTS_TTL_MS = 30 * 1000;
+const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const postResolvers = {
   Query: {
@@ -62,8 +68,11 @@ export const postResolvers = {
           args.data
         )}`; //create key using field name and argumens
         const cached = await getJSON<PostPage>(key); //get cached value as json
-        if (cached) sendResponse(cached);
+
+        if (cached) return sendResponse(cached);
         //if it exists return cached value
+
+        console.log("returning non cache");
 
         const posts = await prisma.post.findMany({
           take: limit + 1, // fetch one extra to check if there's a next page
@@ -109,14 +118,13 @@ export const postResolvers = {
     createPost: async (
       _parent: unknown,
       args: { data: CreatePostArgs },
-      context: any
+      context: ContextObject
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
       let imageUrls: string[] = [];
 
       // 1️⃣ Upload image if provided
       // 1️⃣ Upload images if provided
-
       if (args.data.imageBase64?.length > 0) {
         const uploadPromises = args.data.imageBase64.map(
           async (base64, index) => {
@@ -149,6 +157,8 @@ export const postResolvers = {
         imageUrls = await Promise.all(uploadPromises);
       }
 
+      invalidateByPrefix("gql:posts");
+      console.log("creating post");
       return prisma.post.create({
         data: {
           title: args.data.title,
@@ -168,6 +178,8 @@ export const postResolvers = {
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
+      invalidateByPrefix("gql:posts");
+
       return prisma.post.update({
         where: {
           id: Number(args.id),
@@ -179,6 +191,8 @@ export const postResolvers = {
       });
     },
     deletePost: (_parent: unknown, args: { id: number }) => {
+      invalidateByPrefix("gql:posts");
+
       return prisma.post.delete({
         where: {
           id: Number(args.id),
