@@ -9,7 +9,7 @@ import {
 import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { sendResponse } from "lib/apiResponse";
 import { requireArguments } from "helpers/auth";
-import { makeCacheKey } from "services/cache";
+import { makeCacheKey, getJSON } from "services/cache";
 import { GraphQLResolveInfo } from "graphql";
 
 const prisma = new PrismaClient();
@@ -35,7 +35,7 @@ export const arrestLogResolvers = {
         //   );
 
         const key = `gql:${makeCacheKey(info.fieldName, null)}`;
-
+        const cachedData = await getJSON(key);
         const arrest_logs = await prisma.arrestLog.findMany();
         return sendResponse(arrest_logs);
       } catch (err) {

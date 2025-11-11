@@ -52,24 +52,24 @@ async function main() {
   const createPost = postResolvers.Mutation.createPost;
 
   // 5️⃣ Create posts using the same logic as GraphQL
-  for (let i = 1; i <= 3; i++) {
-    await createPost(
-      null,
-      {
-        data: {
-          title: `Seeded Post ${i}`,
-          body: `This is post ${i} created through the actual createPost resolver.`,
-          userId: "cmgui5jfj0000l30f1ofx4exw",
-          arrestLogId: null,
-          imageBase64: imageBase64Array,
-          imageName: imageNames,
-        },
-      },
-      context
-    );
+  // for (let i = 1; i <= 3; i++) {
+  //   await createPost(
+  //     null,
+  //     {
+  //       data: {
+  //         title: `Seeded Post ${i}`,
+  //         body: `This is post ${i} created through the actual createPost resolver.`,
+  //         userId: "cmgui5jfj0000l30f1ofx4exw",
+  //         arrestLogId: null,
+  //         imageBase64: imageBase64Array,
+  //         imageName: imageNames,
+  //       },
+  //     },
+  //     context
+  //   );
 
-    console.log(`✅ Created post ${i}`);
-  }
+  //   console.log(`✅ Created post ${i}`);
+  // }
 
   console.log("🎉 Seeding complete!");
 }
