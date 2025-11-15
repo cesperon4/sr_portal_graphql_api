@@ -9,7 +9,7 @@ import {
 import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { sendResponse } from "lib/apiResponse";
 import { requireArguments } from "helpers/auth";
-import { makeCacheKey, getJSON } from "services/cache";
+import { makeCacheKey, getJSON, invalidateByPrefix } from "services/cache";
 import { GraphQLResolveInfo } from "graphql";
 
 const prisma = new PrismaClient();
@@ -25,17 +25,19 @@ export const arrestLogResolvers = {
       info: GraphQLResolveInfo
     ): Promise<ApiResponse<ArrestLog[]>> => {
       try {
-        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-        // if (!authenticated)
-        //   return sendResponse(
-        //     [],
-        //     HttpStatus.UNAUTHORIZED,
-        //     HttpMessages.UNAUTHORIZED
-        //   );
-
+        if (!authenticated)
+          return sendResponse(
+            [],
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED
+          );
         const key = `gql:${makeCacheKey(info.fieldName, null)}`;
-        const cachedData = await getJSON(key);
+        const cachedData = await getJSON<ArrestLog[]>(key);
+
+        if (cachedData) return sendResponse(cachedData);
+
         const arrest_logs = await prisma.arrestLog.findMany();
         return sendResponse(arrest_logs);
       } catch (err) {
@@ -147,6 +149,8 @@ export const arrestLogResolvers = {
           },
         });
 
+        invalidateByPrefix("gql:arrestLogs");
+
         return sendResponse(arrest_log);
       } catch (err) {
         console.log("error in mutation create log: ", err);
@@ -163,7 +167,7 @@ export const arrestLogResolvers = {
       context: any
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
-
+      invalidateByPrefix("gql:arrestLogs");
       return prisma.arrestLog.update({
         where: {
           id: Number(args.id),
@@ -174,6 +178,7 @@ export const arrestLogResolvers = {
       });
     },
     deleteArrestLog: (_parent: unknown, args: { id: number }) => {
+      invalidateByPrefix("gql:arrestLogs");
       return prisma.arrestLog.delete({
         where: {
           id: Number(args.id),

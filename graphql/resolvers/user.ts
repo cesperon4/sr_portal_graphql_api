@@ -31,7 +31,6 @@ export const userResolvers = {
   Query: {
     users: (_parent: unknown, args: {}, context: any) => {
       // requireAuth(context); // ⛔ block if not authenticated
-
       return prisma.user.findMany();
     },
     user: (_parent: unknown, args: { id: string }, context: any) => {
@@ -210,8 +209,9 @@ export const userResolvers = {
       const user = await prisma.user.upsert({
         where: { email: args.data.email },
         update: {
-          firstname: args.data.firstname,
-          lastname: args.data.lastname,
+          // firstname: args.data.firstname,
+          // lastname: args.data.lastname,
+          email: args.data.email,
           // you might update other fields if needed
         },
         create: {
@@ -243,7 +243,7 @@ export const userResolvers = {
       context: any
     ) => {
       requireAuth(context); // ⛔ block if not authenticated
-
+      console.log("update user");
       return prisma.user.update({
         where: {
           id: args.id,
