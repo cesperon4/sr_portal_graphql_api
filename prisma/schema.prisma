@@ -4,12 +4,12 @@ generator client {
   engineType = "binary"
 }
 
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-//   directUrl  = env("DIRECT_DATABASE_URL") // Prisma will use this automatically for migrate/seed
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl  = env("DIRECT_DATABASE_URL") // Prisma will use this automatically for migrate/seed
 
-// }
+}
 
 model User {
   id                      String                   @id @default(cuid())
