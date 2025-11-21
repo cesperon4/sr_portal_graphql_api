@@ -1,7 +1,7 @@
 import Redis from "ioredis";
 
 declare global {
-  // @ts-ignore
+  // "@ts-expect-error"
   var _redis: Redis | undefined;
 }
 
@@ -13,6 +13,6 @@ export const redis =
   new Redis(redisUrl, isTls ? { tls: { rejectUnauthorized: false } } : {});
 
 if (process.env.NODE_ENV !== "production") {
-  // @ts-ignore
+  // "@ts-expect-error"
   global._redis = redis;
 }

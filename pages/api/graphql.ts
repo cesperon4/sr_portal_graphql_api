@@ -66,6 +66,7 @@ const server = new ApolloServer({
         const payload = jwt.verify(token, process.env.JWT_SECRET!);
         user = payload as ContextUser;
       } catch (err) {
+        console.log("err in context: ", err);
         return sendResponse(
           [],
           HttpStatus.BAD_REQUEST,
@@ -73,7 +74,6 @@ const server = new ApolloServer({
         );
       }
     }
-    console.log("user: ", user);
 
     return { req, res, user, ip };
   },

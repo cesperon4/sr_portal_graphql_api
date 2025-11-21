@@ -1,14 +1,8 @@
-import { GraphQLResolveInfo } from "graphql";
+import { type GraphQLResolveInfo } from "graphql";
 import { type ContextObject } from "graphql/types/context";
 import { getRateLimitConfig } from "./getRateLimitConfig";
 import { type OperationType } from "./rateLimit.types";
 import { checkRateLimit, getRateLimitIdentifier } from "./rateLimiter";
-
-interface RateLimitConfig {
-  max: number;
-  window: number;
-  message?: string;
-}
 
 export function withRateLimit<Targs = unknown, TResult = unknown>(
   resolver: (
