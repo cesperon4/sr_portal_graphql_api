@@ -1,8 +1,8 @@
-import { redis } from "../lib/redis";
 import crypto from "crypto";
 import stringify from "fast-json-stable-stringify";
+import { redis } from "../lib/redis";
 
-import { type CacheKeyVariables, type CacheValues } from "graphql/types/cache";
+import { type CacheKeyVariables } from "../graphql/types/cache";
 
 export function makeCacheKey(
   operationName: string,

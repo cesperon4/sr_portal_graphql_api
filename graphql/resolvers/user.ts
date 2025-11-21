@@ -1,18 +1,18 @@
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import { type GraphQLResolveInfo } from "graphql";
-import { type ContextObject } from "graphql/types/context";
-import { ApiResponse } from "graphql/types/response";
-import { requireAuth } from "helpers/auth";
 import jwt from "jsonwebtoken";
-import { sendResponse } from "lib/apiResponse";
-import { HttpMessages, HttpStatus } from "lib/constants/http";
-import { withRateLimit } from "lib/withRateLimit";
 import { NextApiResponse } from "next";
 import { PrismaClient, type User } from "../../generated/prisma/client";
+import { type ContextObject } from "../../graphql/types/context";
+import { ApiResponse } from "../../graphql/types/response";
+import { requireAuth } from "../../helpers/auth";
 import { sendVerificationEmail } from "../../helpers/mailer";
 import { createVerificationToken, hashToken } from "../../helpers/verification";
+import { sendResponse } from "../../lib/apiResponse";
+import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { redis } from "../../lib/redis";
+import { withRateLimit } from "../../lib/withRateLimit";
 
 const prisma = new PrismaClient();
 

@@ -1,10 +1,10 @@
-import { type ApiResponse } from "graphql/types/response";
+import { type ApiResponse } from "../graphql/types/response";
 import {
   type HttpMessage,
   HttpMessages,
   HttpStatus,
   type HttpStatusCode,
-} from "lib/constants/http";
+} from "../lib/constants/http";
 
 export function sendResponse<T>(
   data: T,
