@@ -5,7 +5,13 @@
     "lib": ["esnext"],
     "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "outDir": "dist",
+    "baseUrl": ".", // must be set for paths to work
+    "paths": {
+      "lib/*": ["lib/*"] // add any custom aliases
+    },
+    "ignoreDeprecations": "6.0", // silences baseUrl/moduleResolution warnings
     "allowJs": true,
     "skipLibCheck": true,
     "incremental": true,
