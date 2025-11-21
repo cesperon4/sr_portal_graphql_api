@@ -1,19 +1,20 @@
-import { PrismaClient } from "../../generated/prisma/client";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { requireAuth } from "helpers/auth";
 import { serialize } from "cookie";
-
-import { NextApiRequest, NextApiResponse } from "next";
-
-import { hashToken, createVerificationToken } from "../../helpers/verification";
+import { type GraphQLResolveInfo } from "graphql";
+import { type ContextObject } from "graphql/types/context";
+import { ApiResponse } from "graphql/types/response";
+import { requireAuth } from "helpers/auth";
+import jwt from "jsonwebtoken";
+import { sendResponse } from "lib/apiResponse";
+import { HttpMessages, HttpStatus } from "lib/constants/http";
+import { withRateLimit } from "lib/withRateLimit";
+import { NextApiResponse } from "next";
+import { PrismaClient, type User } from "../../generated/prisma/client";
 import { sendVerificationEmail } from "../../helpers/mailer";
-
+import { createVerificationToken, hashToken } from "../../helpers/verification";
 import { redis } from "../../lib/redis";
 
 const prisma = new PrismaClient();
-
-type User = Awaited<ReturnType<typeof prisma.user.findUnique>>;
 
 type CreateUserArgs = {
   firstname: string;
@@ -24,24 +25,84 @@ type CreateUserArgs = {
   password: string;
 };
 
+type UpsertReturn = {
+  user: User;
+  token: string;
+};
+
 const COOLDOWN_SECONDS = 60;
 const DAILY_LIMIT = 5;
 
 export const userResolvers = {
   Query: {
-    users: (_parent: unknown, args: {}, context: any) => {
-      // requireAuth(context); // ⛔ block if not authenticated
-      return prisma.user.findMany();
-    },
-    user: (_parent: unknown, args: { id: string }, context: any) => {
-      requireAuth(context); // ⛔ block if not authenticated
+    users: withRateLimit(
+      async (
+        _parent: unknown,
+        args: {},
+        context: ContextObject,
+        info: GraphQLResolveInfo
+      ): Promise<ApiResponse<User[]>> => {
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        if (!authenticated)
+          return sendResponse(
+            [],
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED
+          );
 
-      return prisma.user.findUnique({
-        where: {
-          id: args.id,
-        },
-      });
-    },
+        if (context.rateLimitError)
+          return sendResponse(
+            [],
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpMessages.RATE_LIMIT_ERROR
+          );
+        const users = await prisma.user.findMany();
+        return sendResponse(users, HttpStatus.OK, HttpMessages.OK);
+      },
+      "query"
+    ),
+
+    user: withRateLimit(
+      async (
+        _parent: unknown,
+        args: { id: string },
+        context: ContextObject
+      ): Promise<ApiResponse<User | null>> => {
+        try {
+          const authenticated = requireAuth(context); // ⛔ block if not authenticated
+
+          if (!authenticated)
+            return sendResponse(
+              null,
+              HttpStatus.UNAUTHORIZED,
+              HttpMessages.UNAUTHORIZED
+            );
+
+          if (context.rateLimitError)
+            return sendResponse(
+              null,
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              HttpMessages.RATE_LIMIT_ERROR
+            );
+
+          const user = await prisma.user.findUnique({
+            where: {
+              id: args.id,
+            },
+          });
+
+          return sendResponse(user, HttpStatus.OK, HttpMessages.OK);
+        } catch (err) {
+          return sendResponse(
+            null,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpMessages.INTERNAL_SERVER_ERROR
+          );
+        }
+      },
+      "query"
+    ),
+
     me: async (_parent: unknown, _args: {}, context: any) => {
       requireAuth(context); // optional helper to throw if not authenticated
       const userId = context.user?.userId;
@@ -187,56 +248,56 @@ export const userResolvers = {
       return true;
     },
 
-    upsertUser: async (
-      _parent: unknown,
-      args: {
-        data: CreateUserArgs &
-          Omit<
-            CreateUserArgs,
-            | "password"
-            | "lastname"
-            | "username"
-            | "role"
-            | "createdAt"
-            | "updatedAt"
-          >;
-      },
-      context: any
-    ) => {
-      const username = args.data.email.split("@")[0]; // simple default username
-      const defaultRole = "USER"; // assuming Role enum has USER
+    upsertUser: withRateLimit(
+      async (
+        _parent: unknown,
+        args: {
+          data: CreateUserArgs & Partial<CreateUserArgs>;
+        },
+        context: any
+      ): Promise<ApiResponse<UpsertReturn | null>> => {
+        try {
+          const username = args.data.email.split("@")[0]; // simple default username
+          const defaultRole = "USER"; // assuming Role enum has USER
 
-      const user = await prisma.user.upsert({
-        where: { email: args.data.email },
-        update: {
-          // firstname: args.data.firstname,
-          // lastname: args.data.lastname,
-          email: args.data.email,
-          // you might update other fields if needed
-        },
-        create: {
-          email: args.data.email,
-          firstname: args.data.firstname,
-          lastname: args.data.lastname,
-          username,
-          role: defaultRole,
-          password: "", // or generate random hash if required
-        },
-      });
+          const user = await prisma.user.upsert({
+            where: { email: args.data.email },
+            update: {
+              email: args.data.email,
+            },
+            create: {
+              email: args.data.email,
+              firstname: args.data.firstname,
+              lastname: args.data.lastname,
+              username,
+              role: defaultRole,
+              password: "", // or generate random hash if required
+            },
+          });
 
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          role: "USER", // distinguish guest from full user
-        },
-        process.env.JWT_SECRET!,
-        {
-          expiresIn: "1h",
+          const token = jwt.sign(
+            {
+              userId: user.id,
+              role: defaultRole, // distinguish guest from full user
+            },
+            process.env.JWT_SECRET!,
+            {
+              expiresIn: "1h",
+            }
+          );
+
+          return sendResponse({ user, token }, HttpStatus.OK, HttpMessages.OK);
+        } catch (err) {
+          console.log(err);
+          return sendResponse(
+            null,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            HttpMessages.INTERNAL_SERVER_ERROR
+          );
         }
-      );
-
-      return { user, token };
-    },
+      },
+      "mutation"
+    ),
     updateUser: (
       _parent: unknown,
       args: { id: string; data: Partial<CreateUserArgs> },
@@ -346,14 +407,13 @@ export const userResolvers = {
       return { token };
     },
 
-    logout: async (_parent: any, _args: any, context: any) => {
-      context.res.setHeader("Set-Cookie", [
-        //set cookie max age to expire
-        `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure=${
-          process.env.NODE_ENV === "production"
-        }`,
-      ]);
-
+    logout: async (_parent: any, _args: any, context: ContextObject) => {
+      // context.res.setHeader("Set-Cookie", [
+      //   //set cookie max age to expire
+      //   `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure=${
+      //     process.env.NODE_ENV === "production"
+      //   }`,
+      // ]);
       return true;
     },
   },

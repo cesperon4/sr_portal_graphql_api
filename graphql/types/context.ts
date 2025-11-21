@@ -13,10 +13,18 @@ type SignedUser = {
   exp: number;
 };
 
+type RateLimitInfo = {
+  remaining: number;
+  resetAt: Date;
+  limit: number;
+};
 export type ContextUser = SignedGuest | SignedUser;
 
 export type ContextObject = {
   req: NextApiRequest;
   res: NextApiResponse;
   user: ContextUser | null;
+  ip: string | null;
+  rateLimitInfo?: RateLimitInfo;
+  rateLimitError?: boolean;
 };
