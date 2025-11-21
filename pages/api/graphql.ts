@@ -1,12 +1,14 @@
+// External packages
 import { ApolloServer } from "apollo-server-micro";
 import Cors from "cors";
 import jwt from "jsonwebtoken";
+import { NextApiRequest, NextApiResponse } from "next";
 
+// Internal modules
 import { type ContextObject, type ContextUser } from "graphql/types/context";
 import { type ApiResponse } from "graphql/types/response";
 import { sendResponse } from "lib/apiResponse";
 import { HttpMessages, HttpStatus } from "lib/constants/http";
-import { NextApiRequest, NextApiResponse } from "next";
 import { resolvers } from "../../graphql/resolvers";
 import { typeDefs } from "../../graphql/schemas";
 
