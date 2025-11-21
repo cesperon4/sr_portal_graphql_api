@@ -1,14 +1,13 @@
-import { ApolloServer, AuthenticationError } from "apollo-server-micro";
-import { typeDefs } from "../../graphql/schemas";
-import { resolvers } from "../../graphql/resolvers";
-import jwt from "jsonwebtoken";
-import { parse } from "cookie";
+import { ApolloServer } from "apollo-server-micro";
 import Cors from "cors";
-import { NextApiRequest, NextApiResponse } from "next";
 import { type ContextObject, type ContextUser } from "graphql/types/context";
-import { sendResponse } from "lib/apiResponse";
-import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { type ApiResponse } from "graphql/types/response";
+import jwt from "jsonwebtoken";
+import { sendResponse } from "lib/apiResponse";
+import { HttpMessages, HttpStatus } from "lib/constants/http";
+import { NextApiRequest, NextApiResponse } from "next";
+import { resolvers } from "../../graphql/resolvers";
+import { typeDefs } from "../../graphql/schemas";
 
 // CORS setup
 const cors = Cors({
@@ -42,6 +41,11 @@ const server = new ApolloServer({
   }): Promise<ContextObject | ApiResponse<[]>> => {
     if (!req || !res) throw new Error("Missing req or res");
 
+    const ip =
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      req.socket.remoteAddress ||
+      null;
+
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader(
       "Access-Control-Allow-Origin",
@@ -69,8 +73,9 @@ const server = new ApolloServer({
         );
       }
     }
+    console.log("user: ", user);
 
-    return { req, res, user };
+    return { req, res, user, ip };
   },
 });
 

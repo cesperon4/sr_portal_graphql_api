@@ -38,4 +38,5 @@ export const HttpMessages = {
   // Server Errors
   INTERNAL_SERVER_ERROR: "Internal server error",
   SERVICE_UNAVAILABLE: "Service unavailable",
+  RATE_LIMIT_ERROR: "Rate limit exceeded. Please try again later.",
 } as const;

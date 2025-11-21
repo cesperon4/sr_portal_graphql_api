@@ -1,16 +1,12 @@
-import { PrismaClient, type ArrestLog } from "../../generated/prisma/client";
-import { type ApiResponse } from "graphql/types/response";
-import { type ContextObject } from "graphql/types/context";
-import { requireAuth } from "helpers/auth";
-import {
-  type CreateArrestLogArgs,
-  type UpdateArrestLogArgs,
-} from "graphql/types/arrestLogs";
-import { HttpStatus, HttpMessages } from "lib/constants/http";
-import { sendResponse } from "lib/apiResponse";
-import { requireArguments } from "helpers/auth";
-import { makeCacheKey, getJSON, invalidateByPrefix } from "services/cache";
 import { GraphQLResolveInfo } from "graphql";
+import { type UpdateArrestLogArgs } from "graphql/types/arrestLogs";
+import { type ContextObject } from "graphql/types/context";
+import { type ApiResponse } from "graphql/types/response";
+import { requireArguments, requireAuth } from "helpers/auth";
+import { sendResponse } from "lib/apiResponse";
+import { HttpMessages, HttpStatus } from "lib/constants/http";
+import { getJSON, invalidateByPrefix, makeCacheKey } from "services/cache";
+import { PrismaClient, type ArrestLog } from "../../generated/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -33,6 +29,7 @@ export const arrestLogResolvers = {
             HttpStatus.UNAUTHORIZED,
             HttpMessages.UNAUTHORIZED
           );
+
         const key = `gql:${makeCacheKey(info.fieldName, null)}`;
         const cachedData = await getJSON<ArrestLog[]>(key);
 

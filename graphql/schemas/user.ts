@@ -33,8 +33,25 @@ export const userTypeDefs = gql`
     createdAt: DateTime
   }
 
+  type ApiUsersResponse {
+    status: Int
+    data: [User]
+    message: String
+  }
+
+  type UpsertUserData {
+    user: User
+    token: String
+  }
+
+  type ApiUpsertUserResponse {
+    status: Int
+    data: UpsertUserData
+    message: String
+  }
+
   type Query {
-    users: [User!]!
+    users: ApiUsersResponse
     user(id: ID!): User!
     me: User!
     chatBotResponse(prompt: String!): String!
@@ -82,7 +99,7 @@ export const userTypeDefs = gql`
     verifyEmail(token: Token!): Boolean!
     resendVerificationEmail(email: String!): Boolean!
     updateUser(id: ID!, data: UpdateUserInput): User!
-    upsertUser(data: UpsertUserInput): AuthPayload!
+    upsertUser(data: UpsertUserInput): ApiUpsertUserResponse
     deleteUser(id: ID!): User!
     login(data: LoginInput): AuthPayload!
     loginGuest: GuestPayload!

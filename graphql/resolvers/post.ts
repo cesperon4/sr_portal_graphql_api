@@ -1,20 +1,19 @@
-import { PrismaClient, type Post } from "../../generated/prisma/client";
-import { requireAuth } from "helpers/auth";
-import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 import { GraphQLResolveInfo } from "graphql";
+import { PrismaClient, type Post } from "../../generated/prisma/client";
+import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 
-import {
-  makeCacheKey,
-  getJSON,
-  setJSON,
-  invalidateByPrefix,
-} from "services/cache";
-import { HttpStatus, HttpMessages } from "lib/constants/http";
 import { sendResponse } from "lib/apiResponse";
+import { HttpMessages, HttpStatus } from "lib/constants/http";
+import {
+  getJSON,
+  invalidateByPrefix,
+  makeCacheKey,
+  setJSON,
+} from "services/cache";
 
+import { type ContextObject } from "graphql/types/context";
 import { type PostsArgs } from "graphql/types/posts";
 import { type ApiResponse } from "graphql/types/response";
-import { type ContextObject } from "graphql/types/context";
 
 const prisma = new PrismaClient();
 

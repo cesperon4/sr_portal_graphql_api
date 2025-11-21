@@ -4,10 +4,10 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjI0MDcwNzQsImV4cCI6MTc2MjQxMDY3NH0.8BTzeH-Ke2pvdS0NQVNK4yTpLYZVpULzR_RVGl7ze1Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjM2NTY1MDMsImV4cCI6MTc2MzY2MDEwM30.JQKKQzfYsgeU0eDqikn3Rymu8Me9RE1mADs-SFQOo8Q
 
 {
-  "query": "query { users { id firstname lastname email username createdAt updatedAt password emailVerified } }"
+  "query": "query { users { data { id firstname lastname email username createdAt updatedAt password emailVerified } message status } }"
 }
 ######
 POST http://localhost:3000/api/graphql
@@ -46,11 +46,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ######
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjM2NTY1NjUsImV4cCI6MTc2MzY2MDE2NX0.eGdUNcZeiWrQuJbU1Es3dAV2bFUxSvEPWO6jUJbKLVA
 
 {
   "query": "query GetUser($id: ID!) { user(id: $id) { id firstname lastname email username createdAt updatedAt } }",
   "variables": {
-    "id": "cmghh4hul0000mnarlu1tlyqv"
+    "id": "cmhmnqsog0000js0f620gvpbc"
   }
 }
 ######
@@ -64,13 +65,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 }
 
 ######
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NTc0NjA3MTcsImV4cCI6MTc1NzQ2NDMxN30.3p62jIwPKVYwQUJwSSt5Ahh0FxrX1KmouL4yzaCnaHI
 
 
 {
-  "query": "mutation { upsertUser(data: { firstname: \"Johss\", lastname: \"Does\", email: \"johnss.does@example.com\"}) { token } }"
+  "query": "mutation { upsertUser(data: { firstname: \"Johss\", lastname: \"Does\", email: \"johnss.does@example.com\"}) { data {user {id} token } message } }"
 }
 
 ######

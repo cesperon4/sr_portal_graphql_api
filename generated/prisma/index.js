@@ -203,7 +203,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/cesperon/Desktop/personal_projects/sr_portal_graphql_api/generated/prisma",
+      "value": "/Users/cesperon/Projects/sr_portal_graphql_api/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -217,7 +217,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/cesperon/Desktop/personal_projects/sr_portal_graphql_api/prisma/schema.prisma",
+    "sourceFilePath": "/Users/cesperon/Projects/sr_portal_graphql_api/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -231,6 +231,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
