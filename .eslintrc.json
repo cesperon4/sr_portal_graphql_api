@@ -47,25 +47,25 @@
         "newlines-between": "always"
       }
     ],
-    "sort-imports": [
-      "error",
-      {
-        "ignoreCase": true,
-        "ignoreDeclarationSort": true,
-        "ignoreMemberSyntaxSortOrder": false,
-        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
-        "allowSeparatedGroups": true
-      }
-    ]
     // "sort-imports": [
     //   "error",
     //   {
     //     "ignoreCase": true,
     //     "ignoreDeclarationSort": true,
-    //     "ignoreMemberSort": false,
+    //     "ignoreMemberSyntaxSortOrder": false,
     //     "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
     //     "allowSeparatedGroups": true
     //   }
     // ]
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+        "allowSeparatedGroups": true
+      }
+    ]
   }
 }
