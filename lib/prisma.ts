@@ -17,6 +17,11 @@ let connectionConfig: { connectionString: string; ssl?: any } = {
 
 if (process.env.DATABASE_CA) {
   // Use the CA certificate content from the environment variable
+  console.log(
+    "DEBUG: DATABASE_CA variable length:",
+    process.env.DATABASE_CA.length
+  );
+
   connectionConfig.ssl = {
     ca: process.env.DATABASE_CA,
     rejectUnauthorized: true, // Now we require authorization because we provided the correct CA
