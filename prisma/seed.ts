@@ -1,138 +1,161 @@
 import fs from "fs";
 import path from "path";
 import { prisma } from "../lib/prisma";
+import { supabaseAdmin } from "../lib/supabaseAdmin"; // <-- Make sure this exists
 
-// 🔄 Convert local image file to Base64
-function getImageBase64(fileName: string): string {
-  // Ensure we start from the prisma folder
-  const absolutePath = path.resolve(__dirname, "seedImages", fileName);
-  const fileBuffer = fs.readFileSync(absolutePath);
-  const ext = path.extname(fileName).slice(1); // e.g., jpg, png
-  return `data:image/${ext};base64,${fileBuffer.toString("base64")}`;
-}
-// 🧹 Reset database
+// 🧹 Reset DB
 async function resetDatabase() {
   console.log("🧹 Clearing database...");
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE "Like", "PostComment", "Post", "User"
     RESTART IDENTITY CASCADE;
   `);
-  console.log("✅ Database cleared and IDs reset.");
+  console.log("✅ DB cleared");
 }
 
-// 🎲 Seed posts with images
+// 📤 Upload image to Supabase + return URL
+async function uploadImageToSupabase(filePath: string, fileName: string) {
+  const fileBuffer = fs.readFileSync(filePath);
+
+  const storagePath = `post-images/${Date.now()}-${fileName}`;
+
+  // Upload to Supabase storage
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from("images")
+    .upload(storagePath, fileBuffer, {
+      contentType: "image/jpeg",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    console.error("Upload Error:", uploadError);
+    throw new Error(uploadError.message);
+  }
+
+  // Get public URL
+  const { data: publicData } = supabaseAdmin.storage
+    .from("images")
+    .getPublicUrl(storagePath);
+
+  console.log("url: ", publicData.publicUrl);
+  return publicData.publicUrl;
+}
+
+// 🎲 Seed posts
 async function seedPosts(userIds: string[]) {
   const projectRoot = path.resolve();
-
   const postsDir = path.join(projectRoot, "prisma", "seedImages");
 
-  // Load image filenames from the folder
-  const imageFiles = fs.readdirSync(postsDir).slice(0, 20); // take first 20 images
+  const imageFiles = fs.readdirSync(postsDir).slice(0, 20);
 
-  // Titles and bodies
+  // Titles + bodies
   const postsData = [
     {
       title: "Two-Vehicle Collision on Main Street Causes Traffic Delays",
-      body: "At approximately 3:45 PM, two vehicles collided near the intersection of Main Street and 7th Avenue. Minor injuries were reported, and traffic was temporarily delayed while crews cleared the scene.",
+      body: "At approximately 3:45 PM, two vehicles collided near the intersection...",
     },
     {
       title: "Suspicious Person Reported Near Elm Park Playground",
-      body: "Residents reported a person acting suspiciously near the Elm Park playground around 6:30 PM. Officers responded and are investigating the situation; no criminal activity confirmed yet.",
+      body: "Residents reported a person acting suspiciously near the Elm Park playground...",
     },
     {
       title: "Burglary Attempt at Local Electronics Store Foiled by Alarm",
-      body: "The store alarm activated at 2:15 AM, preventing a burglary attempt. Security footage captured an unknown suspect fleeing the scene. No items were stolen.",
+      body: "The store alarm activated at 2:15 AM, preventing a burglary attempt...",
     },
     {
       title: "Car Vandalism in Downtown Parking Lot Overnight",
-      body: "Several vehicles were reported vandalized overnight in the downtown parking lot. Broken windows and scratched paint were observed. Police are investigating and reviewing nearby surveillance footage.",
+      body: "Several vehicles were vandalized overnight in a downtown parking lot...",
     },
     {
       title: "Public Disturbance Reported Outside City Library",
-      body: "At around 4:00 PM, officers were called to the city library due to a loud altercation between two individuals. Both parties were separated, and no arrests were made at this time.",
+      body: "Officers responded to a loud altercation outside the city library...",
     },
     {
       title: "Hit-and-Run Incident on 5th Avenue, Suspect Vehicle Sought",
-      body: "A pedestrian was struck by a vehicle on 5th Avenue around 8:30 PM. The driver fled the scene. Police are seeking information on a silver sedan with front-end damage.",
+      body: "A pedestrian was struck by a vehicle on 5th Avenue around 8:30 PM...",
     },
     {
       title: "Loitering Complaint at Gas Station on Maple Road",
-      body: "Several residents reported a group loitering at the Maple Road gas station late last night. Officers responded and dispersed the group; no criminal activity was detected.",
+      body: "Several residents reported a group loitering at a gas station...",
     },
     {
       title: "Noise Complaint Leads to Citation for Illegal Party",
-      body: "Officers responded to a noise complaint at a residential address on Cedar Street. An unauthorized party was ongoing, and a citation was issued for violation of local noise ordinances.",
+      body: "Officers responded to a noise complaint and issued a citation...",
     },
     {
       title: "Stolen Bicycle Recovered Near Riverwalk Trail",
-      body: "A stolen bicycle reported last week was located near the Riverwalk Trail. The owner was notified and the bicycle returned. Investigation continues regarding the theft.",
+      body: "A stolen bicycle reported last week was located near the Riverwalk Trail...",
     },
     {
       title: "Shoplifting Incident at Grocery Store, Suspect in Custody",
-      body: "A suspect was detained by store security for attempting to leave the grocery store with unpaid items valued at approximately $120. Officers arrived and placed the individual in custody.",
+      body: "A suspect was detained for attempting to leave the store with unpaid items...",
     },
     {
       title: "Domestic Dispute Reported, No Injuries",
-      body: "Police responded to a domestic dispute at a residential address on Oak Street. Both parties were spoken to and no injuries were reported. Case is under review.",
+      body: "Police responded to a domestic dispute; no injuries reported...",
     },
     {
       title: "Traffic Stop Leads to Arrest for Outstanding Warrants",
-      body: "During a routine traffic stop on Highway 12, officers discovered the driver had two outstanding warrants. The individual was arrested without incident.",
+      body: "During a routine traffic stop, officers discovered two warrants...",
     },
     {
       title: "Suspicious Package Investigated at City Hall",
-      body: "City Hall staff reported an unattended package in the lobby. Officers responded and determined the package posed no threat. Bomb squad was not required.",
+      body: "An unattended package was investigated and found non-threatening...",
     },
     {
       title: "Minor Car Crash Outside High School, No Injuries",
-      body: "Two vehicles collided outside Lincoln High School at 7:45 AM. There were no reported injuries. Traffic was briefly affected during the cleanup.",
+      body: "Two cars collided outside Lincoln High School this morning...",
     },
     {
       title: "Graffiti Vandalism on Community Center Wall",
-      body: "The community center reported graffiti on its east wall. Officers documented the incident and are reviewing nearby cameras for potential suspects.",
+      body: "Graffiti was discovered on the community center wall...",
     },
     {
       title: "Found Property: Wallet Turned in at Police Station",
-      body: "A wallet was turned into the police station by a concerned citizen. Officers are attempting to locate the owner using identification found inside.",
+      body: "A wallet was turned in by a citizen; owner being contacted...",
     },
     {
       title: "Dog Bite Reported at Neighborhood Park",
-      body: "A dog bite incident was reported at Willow Park. The victim received minor injuries and medical attention. Animal control was notified and is following up with the dog owner.",
+      body: "A dog bite incident occurred at Willow Park. Minor injuries...",
     },
     {
       title: "Illegal Dumping Incident Investigated on Oak Street",
-      body: "Residents reported illegal dumping of construction debris on Oak Street. Officers collected evidence and are attempting to identify the responsible party.",
+      body: "Construction debris was illegally dumped on Oak Street...",
     },
     {
       title: "Vehicle Burglary in Apartment Complex Parking Lot",
-      body: "Multiple vehicles were broken into overnight at the Pinewood Apartments. Personal belongings were stolen from two cars. Police are reviewing surveillance footage.",
+      body: "Several vehicles were broken into at Pinewood Apartments...",
     },
     {
       title: "Assault Reported Near Local Nightclub, Investigation Underway",
-      body: "An assault was reported outside the Blue Moon Nightclub at 1:30 AM. The victim was treated for minor injuries. Police are investigating and seeking witnesses.",
+      body: "An assault occurred outside the Blue Moon Nightclub...",
     },
   ];
 
   for (let i = 0; i < postsData.length; i++) {
-    const imagePath = path.join(postsDir, imageFiles[i]);
-    const imageBase64 = getImageBase64(imagePath);
+    const fileName = imageFiles[i];
+    const localPath = path.join(postsDir, fileName);
+
+    const imageUrl = await uploadImageToSupabase(localPath, fileName);
 
     await prisma.post.create({
       data: {
         title: postsData[i].title,
         body: postsData[i].body,
-        userId: userIds[i % userIds.length], // rotate users
-        imageUrls: [imageBase64],
+        userId: userIds[i % userIds.length],
+        imageUrls: [imageUrl],
         arrestLogId: null,
       },
     });
+
+    console.log(`📸 Uploaded + created post ${i + 1}/20`);
   }
 }
 
 async function main() {
   await resetDatabase();
 
-  // 1️⃣ Users
+  // Seed users
   const users = [
     {
       email: "cesperon4@gmail.com",
@@ -160,10 +183,10 @@ async function main() {
     },
   ];
 
-  const userIds = [];
+  const userIds: string[] = [];
 
   for (const u of users) {
-    const user = await prisma.user.upsert({
+    const created = await prisma.user.upsert({
       where: { email: u.email },
       update: {},
       create: {
@@ -175,13 +198,13 @@ async function main() {
         email: u.email,
       },
     });
-    userIds.push(user.id);
+
+    userIds.push(created.id);
   }
 
-  // 2️⃣ Seed posts
   await seedPosts(userIds);
 
-  console.log("✅ Database seeded with 20 posts, images, and users.");
+  console.log("🔥 Seed completed: 20 posts + users + Supabase image URLs");
 }
 
 main()

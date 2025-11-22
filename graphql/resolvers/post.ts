@@ -132,9 +132,7 @@ export const postResolvers = {
       if (args.data.imageBase64?.length > 0) {
         const uploadPromises = args.data.imageBase64.map(
           async (base64, index) => {
-            const fileName = `images/${Date.now()}-${
-              args.data.imageName[index]
-            }`;
+            const fileName = `post-images/${Date.now()}-${args.data.imageName[index]}`;
             const base64String = base64.includes(",")
               ? base64.split(",")[1]
               : base64;
@@ -152,7 +150,7 @@ export const postResolvers = {
             const { data: publicData } = supabaseAdmin.storage
               .from("images")
               .getPublicUrl(fileName);
-
+            console.log("public data: ", publicData.publicUrl);
             return publicData.publicUrl;
           }
         );
@@ -161,8 +159,9 @@ export const postResolvers = {
         imageUrls = await Promise.all(uploadPromises);
       }
 
-      invalidateByPrefix("gql:posts");
-      console.log("creating post");
+      //luunravqjnesbsmiziqh.supabase.co/storage/v1/object/sign/images/1763853332694-srportal4.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85ZWJjY2I0ZC00N2ZkLTRlZjMtYjRiOS1lMTQ2ZDM4NzhlNzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvMTc2Mzg1MzMzMjY5NC1zcnBvcnRhbDQucG5nIiwiaWF0IjoxNzYzODUzNTU1LCJleHAiOjE3NjQ0NTgzNTV9.cwP2ZkWv6pY8UH8eSLCAiESXtbecT_eb9MOhMBnTKT8
+
+      https: invalidateByPrefix("gql:posts");
       return prisma.post.create({
         data: {
           title: args.data.title,
