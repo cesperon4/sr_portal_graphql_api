@@ -54,6 +54,8 @@ export const postResolvers = {
         //     HttpStatus.UNAUTHORIZED,
         //     HttpMessages.UNAUTHORIZED
         //   );
+        console.log("🔍 [Posts Query] Starting...");
+        console.log("Environment:", process.env.NODE_ENV);
         if (!args.data)
           return sendResponse(
             null,
@@ -81,6 +83,8 @@ export const postResolvers = {
             ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
             : {}),
         });
+
+        console.log("posts: ", posts);
 
         const hasNextPage = posts.length > limit;
         const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
