@@ -2,8 +2,8 @@ import { gql } from "apollo-server-micro";
 
 export const postCommentTypeDefs = gql`
   type PostComment {
-    id: ID
-    postId: ID
+    id: Int!
+    postId: Int
     user: User
     body: String
     post: Post
@@ -13,11 +13,11 @@ export const postCommentTypeDefs = gql`
 
   type Query {
     postComments: [PostComment!]!
-    postComment(id: ID!): PostComment!
+    postComment(id: Int!): PostComment!
   }
 
   input CreatePostCommentInput {
-    postId: ID
+    postId: Int
     userId: ID
     body: String
   }
@@ -28,7 +28,7 @@ export const postCommentTypeDefs = gql`
 
   type Mutation {
     createPostComment(data: CreatePostCommentInput): PostComment!
-    updatePostComment(id: ID!, data: UpdatePostCommentInput): PostComment!
-    deletePostComment(id: ID!): PostComment!
+    updatePostComment(id: Int!, data: UpdatePostCommentInput): PostComment!
+    deletePostComment(id: Int!): PostComment!
   }
 `;

@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
+    // "module": "commonjs",
+    "module": "ESNext", // <-- required for top-level await
     "lib": ["ESNext"],
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "Node",
     "outDir": "dist",
-    // "paths": {
-    //   "lib/*": ["lib/*"],
-    //   "graphql/*": ["graphql/*"]
-    // },
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "ignoreDeprecations": "6.0",
     "allowJs": true,
     "skipLibCheck": true,
     "incremental": true,
@@ -22,34 +24,6 @@
     "emitDecoratorMetadata": true
     // "ignoreDeprecations": "6.0"
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }
-
-// {
-//   "compilerOptions": {
-//     "target": "ES2022",
-//     "module": "esnext",
-//     "lib": ["esnext"],
-//     "strict": true,
-//     "esModuleInterop": true,
-//     "moduleResolution": "node",
-//     "outDir": "dist",
-//     "baseUrl": ".", // must be set for paths to work
-//     "paths": {
-//       "lib/*": ["lib/*"] // add any custom aliases
-//     },
-//     "ignoreDeprecations": "6.0", // silences baseUrl/moduleResolution warnings
-//     "allowJs": true,
-//     "skipLibCheck": true,
-//     "incremental": true,
-//     "resolveJsonModule": true,
-//     "isolatedModules": true,
-//     "jsx": "preserve",
-//     "noEmit": false,
-//     "experimentalDecorators": true,
-//     "emitDecoratorMetadata": true
-//   },
-//   "include": ["**/*.ts"],
-//   "exclude": ["node_modules"]
-// }

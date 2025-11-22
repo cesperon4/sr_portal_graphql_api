@@ -1,5 +1,5 @@
 import { GraphQLResolveInfo } from "graphql";
-import { PrismaClient, type Post } from "../../generated/prisma/client";
+import { type Post } from "../../generated/prisma/client";
 import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 
 import { sendResponse } from "../../lib/apiResponse";
@@ -11,11 +11,12 @@ import {
   setJSON,
 } from "../../services/cache";
 
-import { type ContextObject } from "../types/context";
-import { type PostsArgs } from "../types/posts";
-import { type ApiResponse } from "../types/response";
+import { type ContextObject } from "graphql/types/context";
+import { type PostsArgs } from "graphql/types/posts";
+import { type ApiResponse } from "graphql/types/response";
+import { prisma } from "../../lib/prisma";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 type PostPage = {
   posts: Post[];
@@ -216,6 +217,12 @@ export const postResolvers = {
     user: (parent: Post, _args: {}) => {
       return prisma.user.findUnique({
         where: { id: parent?.userId },
+      });
+    },
+    likes: (parent: Post, _args: {}) => {
+      return prisma.like.findMany({
+        where: { postId: parent?.id },
+        orderBy: { createdAt: "desc" },
       });
     },
   },

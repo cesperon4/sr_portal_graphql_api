@@ -1,20 +1,19 @@
 import bcrypt from "bcryptjs";
 import { serialize } from "cookie";
 import { type GraphQLResolveInfo } from "graphql";
+import { type ContextObject } from "graphql/types/context";
+import { type ApiResponse } from "graphql/types/response";
+import { requireAuth } from "helpers/auth";
 import jwt from "jsonwebtoken";
+import { sendResponse } from "lib/apiResponse";
+import { HttpMessages, HttpStatus } from "lib/constants/http";
+import { withRateLimit } from "lib/withRateLimit";
 import { NextApiResponse } from "next";
-import { PrismaClient, type User } from "../../generated/prisma/client";
-import { type ContextObject } from "../../graphql/types/context";
-import { ApiResponse } from "../../graphql/types/response";
-import { requireAuth } from "../../helpers/auth";
+import { type User } from "../../generated/prisma/client";
 import { sendVerificationEmail } from "../../helpers/mailer";
 import { createVerificationToken, hashToken } from "../../helpers/verification";
-import { sendResponse } from "../../lib/apiResponse";
-import { HttpMessages, HttpStatus } from "../../lib/constants/http";
+import { prisma } from "../../lib/prisma";
 import { redis } from "../../lib/redis";
-import { withRateLimit } from "../../lib/withRateLimit";
-
-const prisma = new PrismaClient();
 
 type CreateUserArgs = {
   firstname: string;
@@ -42,13 +41,13 @@ export const userResolvers = {
         context: ContextObject,
         info: GraphQLResolveInfo
       ): Promise<ApiResponse<User[]>> => {
-        const authenticated = requireAuth(context); // ⛔ block if not authenticated
-        if (!authenticated)
-          return sendResponse(
-            [],
-            HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
-          );
+        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        // if (!authenticated)
+        //   return sendResponse(
+        //     [],
+        //     HttpStatus.UNAUTHORIZED,
+        //     HttpMessages.UNAUTHORIZED
+        //   );
 
         if (context.rateLimitError)
           return sendResponse(

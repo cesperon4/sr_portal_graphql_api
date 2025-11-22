@@ -1,14 +1,33 @@
+// lib/prisma.ts (ONLY file that creates PrismaClient)
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
 import { PrismaClient } from "../generated/prisma/client";
 
-declare global {
-  var prisma: PrismaClient | undefined;
-}
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+  ssl: {
+    rejectUnauthorized: false, // Accept self-signed certificates
+  },
+});
 
 export const prisma =
-  global.prisma ||
+  globalForPrisma.prisma ??
   new PrismaClient({
-    log: ["query", "info", "warn", "error"],
+    adapter,
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "error", "warn"]
+        : ["error"],
   });
 
-// Prevent multiple instances in development (hot reload)
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
+
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
+});

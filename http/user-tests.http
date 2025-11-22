@@ -4,7 +4,7 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjM2NTY1MDMsImV4cCI6MTc2MzY2MDEwM30.JQKKQzfYsgeU0eDqikn3Rymu8Me9RE1mADs-SFQOo8Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM2OTc5NTQsImV4cCI6MTc2MzcwMTU1NH0.g2dbpaBb3L3pH79rP8Hn6D6Ig-rSzXbXoAYAFpYz69E
 
 {
   "query": "query { users { data { id firstname lastname email username createdAt updatedAt password emailVerified } message status } }"
