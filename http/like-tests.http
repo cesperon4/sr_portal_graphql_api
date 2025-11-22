@@ -1,0 +1,47 @@
+######user
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM3NDM5NjMsImV4cCI6MTc2Mzc0NzU2M30.nhvpBz2oOYz49bLNsU9GR5FrPFYZXXij75DrUUkSYUg
+
+{
+  "query": "mutation CreateLike($data: CreateLikeInput) { createLike(data: $data) { data { id isActive } message status } }",
+  "variables": {
+    "data": {
+      "userId": "cmi94ch920000vqmn8djzsrh4",
+      "postId": 1
+    }
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM3NDM5NjMsImV4cCI6MTc2Mzc0NzU2M30.nhvpBz2oOYz49bLNsU9GR5FrPFYZXXij75DrUUkSYUg
+
+{
+  "query": "mutation UpdateLike($data: UpdateLikeInput) { updateLike(data: $data) { data { id isActive } message status } }",
+  "variables": {
+    "data": {
+      "id": 4,
+      "isActive": true
+
+    }
+  }
+}
+######
+
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM3NDM5NjMsImV4cCI6MTc2Mzc0NzU2M30.nhvpBz2oOYz49bLNsU9GR5FrPFYZXXij75DrUUkSYUg
+
+{
+  "query": "mutation ToggleLike($data: ToggleLikeInput ) { toggleLike(data: $data) { data { id isActive } message status } }",
+  "variables": {
+    "data": {
+      "userId": "cmi94ch920000vqmn8djzsrh4",
+      "postId": 1
+
+    }
+  }
+}
+######

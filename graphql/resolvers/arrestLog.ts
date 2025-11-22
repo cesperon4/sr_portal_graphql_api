@@ -6,9 +6,9 @@ import { requireArguments, requireAuth } from "helpers/auth";
 import { sendResponse } from "lib/apiResponse";
 import { HttpMessages, HttpStatus } from "lib/constants/http";
 import { getJSON, invalidateByPrefix, makeCacheKey } from "services/cache";
-import { PrismaClient, type ArrestLog } from "../../generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { type ArrestLog } from "../../generated/prisma/client";
+import { prisma } from "../../lib/prisma";
+// const prisma = new PrismaClient();
 
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 

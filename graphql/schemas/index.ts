@@ -1,9 +1,10 @@
 import { gql } from "apollo-server-micro";
 
-import { userTypeDefs } from "./user";
+import { arrestLogTypeDefs } from "./arrestLog";
+import { likeTypeDefs } from "./like";
 import { postTypeDefs } from "./post";
 import { postCommentTypeDefs } from "./postComment";
-import { arrestLogTypeDefs } from "./arrestLog";
+import { userTypeDefs } from "./user";
 
 export const typeDefs = [
   gql`
@@ -14,4 +15,5 @@ export const typeDefs = [
   postTypeDefs,
   postCommentTypeDefs,
   arrestLogTypeDefs,
+  likeTypeDefs,
 ];

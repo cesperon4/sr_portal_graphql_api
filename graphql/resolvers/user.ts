@@ -9,12 +9,11 @@ import { sendResponse } from "lib/apiResponse";
 import { HttpMessages, HttpStatus } from "lib/constants/http";
 import { withRateLimit } from "lib/withRateLimit";
 import { NextApiResponse } from "next";
-import { PrismaClient, type User } from "../../generated/prisma/client";
+import { type User } from "../../generated/prisma/client";
 import { sendVerificationEmail } from "../../helpers/mailer";
 import { createVerificationToken, hashToken } from "../../helpers/verification";
+import { prisma } from "../../lib/prisma";
 import { redis } from "../../lib/redis";
-
-const prisma = new PrismaClient();
 
 type CreateUserArgs = {
   firstname: string;
@@ -42,13 +41,13 @@ export const userResolvers = {
         context: ContextObject,
         info: GraphQLResolveInfo
       ): Promise<ApiResponse<User[]>> => {
-        const authenticated = requireAuth(context); // ⛔ block if not authenticated
-        if (!authenticated)
-          return sendResponse(
-            [],
-            HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
-          );
+        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        // if (!authenticated)
+        //   return sendResponse(
+        //     [],
+        //     HttpStatus.UNAUTHORIZED,
+        //     HttpMessages.UNAUTHORIZED
+        //   );
 
         if (context.rateLimitError)
           return sendResponse(

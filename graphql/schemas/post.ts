@@ -4,17 +4,18 @@ export const postTypeDefs = gql`
   scalar DateTime
 
   type Post {
-    id: ID
+    id: Int!
     title: String
     body: String
     userId: ID
     createdAt: DateTime
     updatedAt: DateTime
-    arrestLogId: ID
+    arrestLogId: Int
     user: User
-    postComments: [PostComment]
+    postComments: [PostComment!]!
     arrestLog: ArrestLog
     imageUrls: [String]
+    likes: [Like!]!
   }
 
   input PostsInput {
@@ -36,14 +37,14 @@ export const postTypeDefs = gql`
 
   type Query {
     posts(data: PostsInput): PostsResponse!
-    post(id: ID!): Post!
+    post(id: Int!): Post!
   }
 
   input CreatePostInput {
     title: String
     body: String
     userId: ID
-    arrestLogId: ID
+    arrestLogId: Int
     imageBase64: [String]
     imageName: [String]
   }
@@ -55,7 +56,7 @@ export const postTypeDefs = gql`
 
   type Mutation {
     createPost(data: CreatePostInput): Post!
-    updatePost(id: ID!, data: UpdatePostInput): Post!
-    deletePost(id: ID!): Post!
+    updatePost(id: Int!, data: UpdatePostInput): Post!
+    deletePost(id: Int!): Post!
   }
 `;

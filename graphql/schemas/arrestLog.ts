@@ -2,7 +2,7 @@ import { gql } from "apollo-server-micro";
 
 export const arrestLogTypeDefs = gql`
   type ArrestLog {
-    id: ID
+    id: Int
     AGE: String
     ARREST_STATUS: String
     ArrestLocationAptFlr: String
@@ -27,7 +27,7 @@ export const arrestLogTypeDefs = gql`
     SUFFIX: String
     TIME_ARREST: String
     UNIQUEKEY: String
-    postId: ID
+    postId: Int
     post: Post
     createdAt: DateTime
     updatedAt: DateTime
@@ -63,7 +63,7 @@ export const arrestLogTypeDefs = gql`
     SUFFIX: String
     TIME_ARREST: String
     UNIQUEKEY: String
-    postId: ID
+    postId: Int
   }
 
   type ApiArrestLogsResponse {
@@ -107,7 +107,7 @@ export const arrestLogTypeDefs = gql`
 
   type Mutation {
     createArrestLog(data: CreateArrestLogInput): ArrestLog!
-    updateArrestLog(id: ID!, data: UpdateArrestLogInput): ArrestLog!
-    deleteArrestLog(id: ID!): ArrestLog!
+    updateArrestLog(id: Int!, data: UpdateArrestLogInput): ArrestLog!
+    deleteArrestLog(id: Int!): ArrestLog!
   }
 `;
