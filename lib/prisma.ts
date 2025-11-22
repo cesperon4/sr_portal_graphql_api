@@ -6,34 +6,31 @@ const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// --- Configure Prisma Connection ---
+// --- SSL / TLS configuration ---
 const connectionConfig: { connectionString: string; ssl?: any } = {
   connectionString: process.env.DATABASE_URL!,
 };
 
-// If DATABASE_CA is set, use it for SSL verification
 if (process.env.DATABASE_CA) {
+  // Production: trust CA provided in environment variable
   connectionConfig.ssl = {
     ca: process.env.DATABASE_CA,
     rejectUnauthorized: true,
   };
-  console.log(
-    "Prisma configured with CA certificate from environment variable."
-  );
+  console.log("Prisma configured with DATABASE_CA.");
 } else if (process.env.NODE_ENV === "production") {
-  // Production without a CA is risky: warn and optionally disable SSL verification (not recommended)
-  console.warn(
-    "WARNING: Production without DATABASE_CA set. Connection may fail with self-signed cert."
-  );
-  // Optional: temporarily allow self-signed cert (NOT SECURE)
-  // connectionConfig.ssl = { rejectUnauthorized: false };
+  // Production without CA: fail if self-signed (secure)
+  connectionConfig.ssl = { rejectUnauthorized: true };
+  console.warn("No DATABASE_CA provided in production. Connection may fail.");
 } else {
-  // Development fallback
-  console.log("Development environment: SSL verification disabled.");
+  // Development fallback: ignore self-signed certificate
   connectionConfig.ssl = { rejectUnauthorized: false };
+  console.log(
+    "Development mode: SSL verification disabled for self-signed certificate."
+  );
 }
 
-// --- Instantiate Prisma Client ---
+// --- Initialize Prisma Client ---
 const adapter = new PrismaPg(connectionConfig);
 
 export const prisma =
@@ -46,12 +43,10 @@ export const prisma =
         : ["error"],
   });
 
-// Assign global instance in dev for hot reloads
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+// Enable Hot Reloading for Next.js dev
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-// Ensure disconnection on exit
+// Graceful shutdown
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
 });
