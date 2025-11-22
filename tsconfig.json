@@ -6,13 +6,9 @@
     "lib": ["ESNext"],
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "outDir": "dist",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "ignoreDeprecations": "6.0",
+    // "ignoreDeprecations": "6.0",
     "allowJs": true,
     "skipLibCheck": true,
     "incremental": true,

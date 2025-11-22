@@ -1,13 +1,17 @@
 import { GraphQLResolveInfo } from "graphql";
-import { type UpdateArrestLogArgs } from "graphql/types/arrestLogs";
-import { type ContextObject } from "graphql/types/context";
-import { type ApiResponse } from "graphql/types/response";
-import { requireArguments, requireAuth } from "helpers/auth";
-import { sendResponse } from "lib/apiResponse";
-import { HttpMessages, HttpStatus } from "lib/constants/http";
-import { getJSON, invalidateByPrefix, makeCacheKey } from "services/cache";
 import { type ArrestLog } from "../../generated/prisma/client";
+import { requireArguments, requireAuth } from "../../helpers/auth";
+import { sendResponse } from "../../lib/apiResponse";
+import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { prisma } from "../../lib/prisma";
+import {
+  getJSON,
+  invalidateByPrefix,
+  makeCacheKey,
+} from "../../services/cache";
+import { type UpdateArrestLogArgs } from "../types/arrestLogs";
+import { type ContextObject } from "../types/context";
+import { type ApiResponse } from "../types/response";
 // const prisma = new PrismaClient();
 
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour

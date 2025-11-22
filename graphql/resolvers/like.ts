@@ -1,11 +1,11 @@
-import { type Like } from "generated/prisma/client";
-import { type ContextObject } from "graphql/types/context";
-import { ApiResponse } from "graphql/types/response";
-import { requireAuth } from "helpers/auth";
-import { sendResponse } from "lib/apiResponse";
-import { HttpMessages, HttpStatus } from "lib/constants/http";
-import { prisma } from "lib/prisma";
-import { withRateLimit } from "lib/withRateLimit";
+import { type Like } from "../../generated/prisma/client";
+import { requireAuth } from "../../helpers/auth";
+import { sendResponse } from "../../lib/apiResponse";
+import { HttpMessages, HttpStatus } from "../../lib/constants/http";
+import { prisma } from "../../lib/prisma";
+import { withRateLimit } from "../../lib/withRateLimit";
+import { type ContextObject } from "../types/context";
+import { ApiResponse } from "../types/response";
 
 export const likeResolvers = {
   Query: {},

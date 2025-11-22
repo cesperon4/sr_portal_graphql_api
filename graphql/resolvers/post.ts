@@ -11,10 +11,10 @@ import {
   setJSON,
 } from "../../services/cache";
 
-import { type ContextObject } from "graphql/types/context";
-import { type PostsArgs } from "graphql/types/posts";
-import { type ApiResponse } from "graphql/types/response";
 import { prisma } from "../../lib/prisma";
+import { type ContextObject } from "../types/context";
+import { type PostsArgs } from "../types/posts";
+import { type ApiResponse } from "../types/response";
 
 // const prisma = new PrismaClient();
 
