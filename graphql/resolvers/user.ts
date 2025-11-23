@@ -48,7 +48,7 @@ export const userResolvers = {
         //     HttpStatus.UNAUTHORIZED,
         //     HttpMessages.UNAUTHORIZED
         //   );
-
+        console.log("hitting users");
         if (context.rateLimitError)
           return sendResponse(
             [],

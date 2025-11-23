@@ -3,9 +3,10 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "query GetPosts($l imit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { status message data{posts{ id title body userId createdAt updatedAt arrestLogId imageUrls likes{ id isActive userId postId } } cursor hasNextPage}}}",
+  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { status message data { posts { id title body userId createdAt updatedAt arrestLogId imageUrls likes { id isActive userId postId } } cursor hasNextPage } } }",
   "variables": { "limit": 5, "cursor": null }
 }
+
 
 #####
 POST http://localhost:3000/api/graphql
