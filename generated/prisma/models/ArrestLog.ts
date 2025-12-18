@@ -909,10 +909,6 @@ export type ArrestLogUncheckedUpdateOneWithoutPostNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArrestLogUpdateToOneWithWhereWithoutPostInput, Prisma.ArrestLogUpdateWithoutPostInput>, Prisma.ArrestLogUncheckedUpdateWithoutPostInput>
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type ArrestLogCreateWithoutPostInput = {
   AGE?: string | null
   ARREST_STATUS?: string | null

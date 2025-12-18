@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { randomCategory, randomSantaRosaCoords } from "../helpers/seed";
 import { prisma } from "../lib/prisma";
 import { supabaseAdmin } from "../lib/supabaseAdmin"; // <-- Make sure this exists
 
@@ -133,6 +134,8 @@ async function seedPosts(userIds: string[]) {
   ];
 
   for (let i = 0; i < postsData.length; i++) {
+    const { lat, lon } = randomSantaRosaCoords();
+
     const fileName = imageFiles[i];
     const localPath = path.join(postsDir, fileName);
 
@@ -145,6 +148,16 @@ async function seedPosts(userIds: string[]) {
         userId: userIds[i % userIds.length],
         imageUrls: [imageUrl],
         arrestLogId: null,
+        lat,
+        lon,
+        street: "Random Street",
+        state: "California",
+        city: "Santa Rosa",
+        zip: "95401",
+        date_occurred: new Date(
+          Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
+        ),
+        category: randomCategory(),
       },
     });
 

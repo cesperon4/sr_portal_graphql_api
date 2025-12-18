@@ -36,6 +36,7 @@ model EmailVerificationToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+
 model Post {
   id           Int           @id @default(autoincrement())
   title        String
@@ -49,6 +50,14 @@ model Post {
   postComments PostComment[]
   imageUrls    Json     @default("[]")  // store an array as JSON
   likes        Like[]
+  lat Float?
+  lon Float?
+  street String?
+  city String?
+  state String?
+  zip String?
+  date_occurred DateTime?
+  category String?
 }
 
 model Like {

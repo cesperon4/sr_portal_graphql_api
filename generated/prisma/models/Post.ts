@@ -29,11 +29,15 @@ export type AggregatePost = {
 export type PostAvgAggregateOutputType = {
   id: number | null
   arrestLogId: number | null
+  lat: number | null
+  lon: number | null
 }
 
 export type PostSumAggregateOutputType = {
   id: number | null
   arrestLogId: number | null
+  lat: number | null
+  lon: number | null
 }
 
 export type PostMinAggregateOutputType = {
@@ -44,6 +48,14 @@ export type PostMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   arrestLogId: number | null
+  lat: number | null
+  lon: number | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  date_occurred: Date | null
+  category: string | null
 }
 
 export type PostMaxAggregateOutputType = {
@@ -54,6 +66,14 @@ export type PostMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   arrestLogId: number | null
+  lat: number | null
+  lon: number | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  date_occurred: Date | null
+  category: string | null
 }
 
 export type PostCountAggregateOutputType = {
@@ -65,6 +85,14 @@ export type PostCountAggregateOutputType = {
   updatedAt: number
   arrestLogId: number
   imageUrls: number
+  lat: number
+  lon: number
+  street: number
+  city: number
+  state: number
+  zip: number
+  date_occurred: number
+  category: number
   _all: number
 }
 
@@ -72,11 +100,15 @@ export type PostCountAggregateOutputType = {
 export type PostAvgAggregateInputType = {
   id?: true
   arrestLogId?: true
+  lat?: true
+  lon?: true
 }
 
 export type PostSumAggregateInputType = {
   id?: true
   arrestLogId?: true
+  lat?: true
+  lon?: true
 }
 
 export type PostMinAggregateInputType = {
@@ -87,6 +119,14 @@ export type PostMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   arrestLogId?: true
+  lat?: true
+  lon?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  date_occurred?: true
+  category?: true
 }
 
 export type PostMaxAggregateInputType = {
@@ -97,6 +137,14 @@ export type PostMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   arrestLogId?: true
+  lat?: true
+  lon?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  date_occurred?: true
+  category?: true
 }
 
 export type PostCountAggregateInputType = {
@@ -108,6 +156,14 @@ export type PostCountAggregateInputType = {
   updatedAt?: true
   arrestLogId?: true
   imageUrls?: true
+  lat?: true
+  lon?: true
+  street?: true
+  city?: true
+  state?: true
+  zip?: true
+  date_occurred?: true
+  category?: true
   _all?: true
 }
 
@@ -206,6 +262,14 @@ export type PostGroupByOutputType = {
   updatedAt: Date
   arrestLogId: number | null
   imageUrls: runtime.JsonValue
+  lat: number | null
+  lon: number | null
+  street: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  date_occurred: Date | null
+  category: string | null
   _count: PostCountAggregateOutputType | null
   _avg: PostAvgAggregateOutputType | null
   _sum: PostSumAggregateOutputType | null
@@ -240,6 +304,14 @@ export type PostWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  lat?: Prisma.FloatNullableFilter<"Post"> | number | null
+  lon?: Prisma.FloatNullableFilter<"Post"> | number | null
+  street?: Prisma.StringNullableFilter<"Post"> | string | null
+  city?: Prisma.StringNullableFilter<"Post"> | string | null
+  state?: Prisma.StringNullableFilter<"Post"> | string | null
+  zip?: Prisma.StringNullableFilter<"Post"> | string | null
+  date_occurred?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  category?: Prisma.StringNullableFilter<"Post"> | string | null
   arrestLog?: Prisma.XOR<Prisma.ArrestLogNullableScalarRelationFilter, Prisma.ArrestLogWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   postComments?: Prisma.PostCommentListRelationFilter
@@ -255,6 +327,14 @@ export type PostOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  lat?: Prisma.SortOrderInput | Prisma.SortOrder
+  lon?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zip?: Prisma.SortOrderInput | Prisma.SortOrder
+  date_occurred?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   arrestLog?: Prisma.ArrestLogOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
   postComments?: Prisma.PostCommentOrderByRelationAggregateInput
@@ -273,6 +353,14 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  lat?: Prisma.FloatNullableFilter<"Post"> | number | null
+  lon?: Prisma.FloatNullableFilter<"Post"> | number | null
+  street?: Prisma.StringNullableFilter<"Post"> | string | null
+  city?: Prisma.StringNullableFilter<"Post"> | string | null
+  state?: Prisma.StringNullableFilter<"Post"> | string | null
+  zip?: Prisma.StringNullableFilter<"Post"> | string | null
+  date_occurred?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  category?: Prisma.StringNullableFilter<"Post"> | string | null
   arrestLog?: Prisma.XOR<Prisma.ArrestLogNullableScalarRelationFilter, Prisma.ArrestLogWhereInput> | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   postComments?: Prisma.PostCommentListRelationFilter
@@ -288,6 +376,14 @@ export type PostOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  lat?: Prisma.SortOrderInput | Prisma.SortOrder
+  lon?: Prisma.SortOrderInput | Prisma.SortOrder
+  street?: Prisma.SortOrderInput | Prisma.SortOrder
+  city?: Prisma.SortOrderInput | Prisma.SortOrder
+  state?: Prisma.SortOrderInput | Prisma.SortOrder
+  zip?: Prisma.SortOrderInput | Prisma.SortOrder
+  date_occurred?: Prisma.SortOrderInput | Prisma.SortOrder
+  category?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.PostCountOrderByAggregateInput
   _avg?: Prisma.PostAvgOrderByAggregateInput
   _max?: Prisma.PostMaxOrderByAggregateInput
@@ -307,6 +403,14 @@ export type PostScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonWithAggregatesFilter<"Post">
+  lat?: Prisma.FloatNullableWithAggregatesFilter<"Post"> | number | null
+  lon?: Prisma.FloatNullableWithAggregatesFilter<"Post"> | number | null
+  street?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  city?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  state?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  zip?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
+  date_occurred?: Prisma.DateTimeNullableWithAggregatesFilter<"Post"> | Date | string | null
+  category?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
 }
 
 export type PostCreateInput = {
@@ -316,6 +420,14 @@ export type PostCreateInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogCreateNestedOneWithoutPostInput
   user: Prisma.UserCreateNestedOneWithoutPostsInput
   postComments?: Prisma.PostCommentCreateNestedManyWithoutPostInput
@@ -331,6 +443,14 @@ export type PostUncheckedCreateInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogUncheckedCreateNestedOneWithoutPostInput
   postComments?: Prisma.PostCommentUncheckedCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
@@ -343,6 +463,14 @@ export type PostUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUpdateOneWithoutPostNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   postComments?: Prisma.PostCommentUpdateManyWithoutPostNestedInput
@@ -358,6 +486,14 @@ export type PostUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUncheckedUpdateOneWithoutPostNestedInput
   postComments?: Prisma.PostCommentUncheckedUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
@@ -372,6 +508,14 @@ export type PostCreateManyInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
 }
 
 export type PostUpdateManyMutationInput = {
@@ -381,6 +525,14 @@ export type PostUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PostUncheckedUpdateManyInput = {
@@ -392,6 +544,14 @@ export type PostUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PostListRelationFilter = {
@@ -413,11 +573,21 @@ export type PostCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lon?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  date_occurred?: Prisma.SortOrder
+  category?: Prisma.SortOrder
 }
 
 export type PostAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lon?: Prisma.SortOrder
 }
 
 export type PostMaxOrderByAggregateInput = {
@@ -428,6 +598,14 @@ export type PostMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lon?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  date_occurred?: Prisma.SortOrder
+  category?: Prisma.SortOrder
 }
 
 export type PostMinOrderByAggregateInput = {
@@ -438,11 +616,21 @@ export type PostMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lon?: Prisma.SortOrder
+  street?: Prisma.SortOrder
+  city?: Prisma.SortOrder
+  state?: Prisma.SortOrder
+  zip?: Prisma.SortOrder
+  date_occurred?: Prisma.SortOrder
+  category?: Prisma.SortOrder
 }
 
 export type PostSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
+  lat?: Prisma.SortOrder
+  lon?: Prisma.SortOrder
 }
 
 export type PostScalarRelationFilter = {
@@ -498,6 +686,18 @@ export type NullableIntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -557,6 +757,14 @@ export type PostCreateWithoutUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogCreateNestedOneWithoutPostInput
   postComments?: Prisma.PostCommentCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
@@ -570,6 +778,14 @@ export type PostUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogUncheckedCreateNestedOneWithoutPostInput
   postComments?: Prisma.PostCommentUncheckedCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
@@ -613,6 +829,14 @@ export type PostScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  lat?: Prisma.FloatNullableFilter<"Post"> | number | null
+  lon?: Prisma.FloatNullableFilter<"Post"> | number | null
+  street?: Prisma.StringNullableFilter<"Post"> | string | null
+  city?: Prisma.StringNullableFilter<"Post"> | string | null
+  state?: Prisma.StringNullableFilter<"Post"> | string | null
+  zip?: Prisma.StringNullableFilter<"Post"> | string | null
+  date_occurred?: Prisma.DateTimeNullableFilter<"Post"> | Date | string | null
+  category?: Prisma.StringNullableFilter<"Post"> | string | null
 }
 
 export type PostCreateWithoutLikesInput = {
@@ -622,6 +846,14 @@ export type PostCreateWithoutLikesInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogCreateNestedOneWithoutPostInput
   user: Prisma.UserCreateNestedOneWithoutPostsInput
   postComments?: Prisma.PostCommentCreateNestedManyWithoutPostInput
@@ -636,6 +868,14 @@ export type PostUncheckedCreateWithoutLikesInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogUncheckedCreateNestedOneWithoutPostInput
   postComments?: Prisma.PostCommentUncheckedCreateNestedManyWithoutPostInput
 }
@@ -663,6 +903,14 @@ export type PostUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUpdateOneWithoutPostNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   postComments?: Prisma.PostCommentUpdateManyWithoutPostNestedInput
@@ -677,6 +925,14 @@ export type PostUncheckedUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUncheckedUpdateOneWithoutPostNestedInput
   postComments?: Prisma.PostCommentUncheckedUpdateManyWithoutPostNestedInput
 }
@@ -688,6 +944,14 @@ export type PostCreateWithoutPostCommentsInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogCreateNestedOneWithoutPostInput
   user: Prisma.UserCreateNestedOneWithoutPostsInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
@@ -702,6 +966,14 @@ export type PostUncheckedCreateWithoutPostCommentsInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   arrestLog?: Prisma.ArrestLogUncheckedCreateNestedOneWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
 }
@@ -729,6 +1001,14 @@ export type PostUpdateWithoutPostCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUpdateOneWithoutPostNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
@@ -743,6 +1023,14 @@ export type PostUncheckedUpdateWithoutPostCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUncheckedUpdateOneWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
@@ -754,6 +1042,14 @@ export type PostCreateWithoutArrestLogInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   user: Prisma.UserCreateNestedOneWithoutPostsInput
   postComments?: Prisma.PostCommentCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeCreateNestedManyWithoutPostInput
@@ -768,6 +1064,14 @@ export type PostUncheckedCreateWithoutArrestLogInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
   postComments?: Prisma.PostCommentUncheckedCreateNestedManyWithoutPostInput
   likes?: Prisma.LikeUncheckedCreateNestedManyWithoutPostInput
 }
@@ -795,6 +1099,14 @@ export type PostUpdateWithoutArrestLogInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutPostsNestedInput
   postComments?: Prisma.PostCommentUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
@@ -809,6 +1121,14 @@ export type PostUncheckedUpdateWithoutArrestLogInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postComments?: Prisma.PostCommentUncheckedUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
 }
@@ -821,6 +1141,14 @@ export type PostCreateManyUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: number | null
+  lon?: number | null
+  street?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
+  date_occurred?: Date | string | null
+  category?: string | null
 }
 
 export type PostUpdateWithoutUserInput = {
@@ -830,6 +1158,14 @@ export type PostUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUpdateOneWithoutPostNestedInput
   postComments?: Prisma.PostCommentUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUpdateManyWithoutPostNestedInput
@@ -843,6 +1179,14 @@ export type PostUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   arrestLog?: Prisma.ArrestLogUncheckedUpdateOneWithoutPostNestedInput
   postComments?: Prisma.PostCommentUncheckedUpdateManyWithoutPostNestedInput
   likes?: Prisma.LikeUncheckedUpdateManyWithoutPostNestedInput
@@ -856,6 +1200,14 @@ export type PostUncheckedUpdateManyWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_occurred?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -907,6 +1259,14 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  lat?: boolean
+  lon?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  date_occurred?: boolean
+  category?: boolean
   arrestLog?: boolean | Prisma.Post$arrestLogArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   postComments?: boolean | Prisma.Post$postCommentsArgs<ExtArgs>
@@ -923,6 +1283,14 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  lat?: boolean
+  lon?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  date_occurred?: boolean
+  category?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
@@ -935,6 +1303,14 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  lat?: boolean
+  lon?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  date_occurred?: boolean
+  category?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["post"]>
 
@@ -947,9 +1323,17 @@ export type PostSelectScalar = {
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  lat?: boolean
+  lon?: boolean
+  street?: boolean
+  city?: boolean
+  state?: boolean
+  zip?: boolean
+  date_occurred?: boolean
+  category?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrls", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrls" | "lat" | "lon" | "street" | "city" | "state" | "zip" | "date_occurred" | "category", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   arrestLog?: boolean | Prisma.Post$arrestLogArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -981,6 +1365,14 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedAt: Date
     arrestLogId: number | null
     imageUrls: runtime.JsonValue
+    lat: number | null
+    lon: number | null
+    street: string | null
+    city: string | null
+    state: string | null
+    zip: string | null
+    date_occurred: Date | null
+    category: string | null
   }, ExtArgs["result"]["post"]>
   composites: {}
 }
@@ -1416,6 +1808,14 @@ export interface PostFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly arrestLogId: Prisma.FieldRef<"Post", 'Int'>
   readonly imageUrls: Prisma.FieldRef<"Post", 'Json'>
+  readonly lat: Prisma.FieldRef<"Post", 'Float'>
+  readonly lon: Prisma.FieldRef<"Post", 'Float'>
+  readonly street: Prisma.FieldRef<"Post", 'String'>
+  readonly city: Prisma.FieldRef<"Post", 'String'>
+  readonly state: Prisma.FieldRef<"Post", 'String'>
+  readonly zip: Prisma.FieldRef<"Post", 'String'>
+  readonly date_occurred: Prisma.FieldRef<"Post", 'DateTime'>
+  readonly category: Prisma.FieldRef<"Post", 'String'>
 }
     
 
