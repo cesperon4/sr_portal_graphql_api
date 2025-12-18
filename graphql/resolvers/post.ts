@@ -11,6 +11,7 @@ import {
   setJSON,
 } from "../../services/cache";
 
+import { parseLocation } from "../../helpers/stringParser";
 import { prisma } from "../../lib/prisma";
 import { type ContextObject } from "../types/context";
 import { type PostsArgs } from "../types/posts";
@@ -23,7 +24,28 @@ type PostPage = {
   cursor: number | null;
   hasNextPage: boolean;
 };
+
+type MapPost = {
+  id: number;
+  lat: number;
+  lon: number;
+  title: string;
+  date_occurred: Date;
+};
+
 // type Post = Awaited<ReturnType<typeof prisma.post.findUnique>>;
+
+type PostCategory =
+  | "VA"
+  | "SS"
+  | "CE"
+  | "TB"
+  | "DD"
+  | "TI"
+  | "PD"
+  | "EH"
+  | "PL"
+  | "CO";
 
 interface CreatePostArgs {
   title: string;
@@ -32,9 +54,14 @@ interface CreatePostArgs {
   arrestLogId: number | null;
   imageBase64: string[]; // Optional field for base64 image data
   imageName: string[]; // Optional field for image name
+  lat?: string;
+  lon?: string;
+  locationName?: string;
+  date?: Date;
+  category?: PostCategory;
+  date_occurred?: Date;
 }
 
-// const POSTS_TTL_MS = 30 * 1000;
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const postResolvers = {
@@ -54,8 +81,7 @@ export const postResolvers = {
         //     HttpStatus.UNAUTHORIZED,
         //     HttpMessages.UNAUTHORIZED
         //   );
-        console.log("🔍 [Posts Query] Starting...");
-        console.log("Environment:", process.env.NODE_ENV);
+
         if (!args.data)
           return sendResponse(
             null,
@@ -72,9 +98,6 @@ export const postResolvers = {
         const cached = await getJSON<PostPage>(key); //get cached value as json
 
         if (cached) return sendResponse(cached);
-        //if it exists return cached value
-
-        console.log("returning non cache");
 
         const posts = await prisma.post.findMany({
           take: limit + 1, // fetch one extra to check if there's a next page
@@ -83,8 +106,6 @@ export const postResolvers = {
             ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
             : {}),
         });
-
-        console.log("posts: ", posts);
 
         const hasNextPage = posts.length > limit;
         const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
@@ -106,7 +127,6 @@ export const postResolvers = {
           HttpMessages.INTERNAL_SERVER_ERROR
         );
       }
-      // return prisma.post.findMany({ orderBy: { createdAt: "desc" } });
     },
     post: async (_parent: unknown, args: { id: number }, context: any) => {
       // requireAuth(context); // ⛔ block if not authenticated
@@ -117,6 +137,41 @@ export const postResolvers = {
         },
       });
     },
+    mapPosts: async (
+      _parent: unknown,
+      args: unknown,
+      context: ContextObject,
+      info: GraphQLResolveInfo
+    ): Promise<ApiResponse<MapPost[] | null>> => {
+      try {
+        const key = `gql:${info.fieldName}:${makeCacheKey(info.fieldName, null)}`;
+
+        const cached = await getJSON<MapPost[]>(key); //get cached value as json
+
+        if (cached) return sendResponse(cached);
+
+        const map_posts = (await prisma.post.findMany({
+          where: { lat: { not: null }, lon: { not: null } },
+          select: {
+            id: true,
+            lat: true,
+            lon: true,
+            title: true,
+            date_occurred: true,
+          },
+        })) as MapPost[];
+
+        await setJSON(key, map_posts, POSTS_TTL_MS);
+        return sendResponse(map_posts);
+      } catch (err) {
+        console.log(err);
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
+    },
   },
   Mutation: {
     createPost: async (
@@ -125,10 +180,16 @@ export const postResolvers = {
       context: ContextObject
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
+
       let imageUrls: string[] = [];
 
       // 1️⃣ Upload image if provided
       // 1️⃣ Upload images if provided
+
+      const { street, city, state, zip } = parseLocation(
+        args.data.locationName
+      );
+
       if (args.data.imageBase64?.length > 0) {
         const uploadPromises = args.data.imageBase64.map(
           async (base64, index) => {
@@ -155,13 +216,10 @@ export const postResolvers = {
           }
         );
 
-        // Wait for all uploads to complete
         imageUrls = await Promise.all(uploadPromises);
       }
 
-      //luunravqjnesbsmiziqh.supabase.co/storage/v1/object/sign/images/1763853332694-srportal4.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85ZWJjY2I0ZC00N2ZkLTRlZjMtYjRiOS1lMTQ2ZDM4NzhlNzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJpbWFnZXMvMTc2Mzg1MzMzMjY5NC1zcnBvcnRhbDQucG5nIiwiaWF0IjoxNzYzODUzNTU1LCJleHAiOjE3NjQ0NTgzNTV9.cwP2ZkWv6pY8UH8eSLCAiESXtbecT_eb9MOhMBnTKT8
-
-      https: invalidateByPrefix("gql:posts");
+      invalidateByPrefix("gql:posts");
       return prisma.post.create({
         data: {
           title: args.data.title,
@@ -171,6 +229,17 @@ export const postResolvers = {
           createdAt: new Date(),
           updatedAt: new Date(),
           imageUrls,
+          lat: args.data.lat ? parseFloat(args.data.lat) : undefined,
+          lon: args.data.lon ? parseFloat(args.data.lon) : undefined,
+          street: street ? street : undefined,
+          // street: street ? { set: street } : undefined,
+          category: args.data.category ? args.data.category : undefined,
+          city: city ? city : undefined,
+          state: state ? state : undefined,
+          zip: zip ? zip : undefined,
+          date_occurred: args.data.date_occurred
+            ? args.data.date_occurred
+            : undefined,
         },
       });
     },
@@ -188,8 +257,12 @@ export const postResolvers = {
           id: Number(args.id),
         },
         data: {
-          ...args.data,
           updatedAt: new Date(),
+          title: args.data.title ? { set: args.data.title } : undefined,
+          body: args.data.body ? { set: args.data.body } : undefined,
+          category: args.data.category
+            ? { set: args.data.category }
+            : undefined,
         },
       });
     },

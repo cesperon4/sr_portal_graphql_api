@@ -16,6 +16,22 @@ export const postTypeDefs = gql`
     arrestLog: ArrestLog
     imageUrls: [String]
     likes: [Like!]!
+    lat: Float
+    lon: Float
+    street: String
+    city: String
+    state: String
+    zip: String
+    date_occurred: DateTime
+    category: String
+  }
+
+  type MapPost {
+    id: Int!
+    title: String
+    lat: Float!
+    lon: Float!
+    date_occurred: DateTime
   }
 
   input PostsInput {
@@ -35,9 +51,16 @@ export const postTypeDefs = gql`
     data: PostsPage
   }
 
+  type MapPostsResponse {
+    status: Int
+    message: String
+    data: [MapPost!]!
+  }
+
   type Query {
     posts(data: PostsInput): PostsResponse!
     post(id: Int!): Post!
+    mapPosts: MapPostsResponse
   }
 
   input CreatePostInput {
@@ -47,11 +70,17 @@ export const postTypeDefs = gql`
     arrestLogId: Int
     imageBase64: [String]
     imageName: [String]
+    lat: String
+    lon: String
+    locationName: String
+    date_occurred: DateTime
+    category: String
   }
 
   input UpdatePostInput {
     title: String
     body: String
+    category: String
   }
 
   type Mutation {

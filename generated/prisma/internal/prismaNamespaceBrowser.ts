@@ -111,7 +111,15 @@ export const PostScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   arrestLogId: 'arrestLogId',
-  imageUrls: 'imageUrls'
+  imageUrls: 'imageUrls',
+  lat: 'lat',
+  lon: 'lon',
+  street: 'street',
+  city: 'city',
+  state: 'state',
+  zip: 'zip',
+  date_occurred: 'date_occurred',
+  category: 'category'
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
