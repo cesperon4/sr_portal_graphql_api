@@ -40,7 +40,7 @@ export const postTypeDefs = gql`
   }
 
   type PostsPage {
-    posts: [Post!]!
+    data: [Post!]!
     cursor: Int
     hasNextPage: Boolean!
   }

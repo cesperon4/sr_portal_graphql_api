@@ -17,6 +17,23 @@ export const likeTypeDefs = gql`
     postId: Int
   }
 
+  input LikedPostInput {
+    limit: Int!
+    cursor: Int
+  }
+
+  type LikePage {
+    data: [Like!]!
+    hasNextPage: Boolean
+    cursor: Int
+  }
+
+  type LikedPostResponse {
+    data: LikePage
+    status: Int
+    message: String
+  }
+
   input ToggleLikeInput {
     userId: String
     postId: Int

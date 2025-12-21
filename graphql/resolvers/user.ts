@@ -3,7 +3,12 @@ import { serialize } from "cookie";
 import { type GraphQLResolveInfo } from "graphql";
 import jwt from "jsonwebtoken";
 import { NextApiResponse } from "next";
-import { type User } from "../../generated/prisma/client";
+import {
+  type Like,
+  type Post,
+  type PostComment,
+  type User,
+} from "../../generated/prisma/client";
 import { requireAuth } from "../../helpers/auth";
 import { sendVerificationEmail } from "../../helpers/mailer";
 import { createVerificationToken, hashToken } from "../../helpers/verification";
@@ -12,9 +17,9 @@ import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { prisma } from "../../lib/prisma";
 import { redis } from "../../lib/redis";
 import { withRateLimit } from "../../lib/withRateLimit";
+import { getJSON, makeCacheKey, setJSON } from "../../services/cache";
 import { type ContextObject } from "../types/context";
-import { type ApiResponse } from "../types/response";
-
+import { type ApiResponse, type Page } from "../types/response";
 type CreateUserArgs = {
   firstname: string;
   lastname: string;
@@ -24,13 +29,32 @@ type CreateUserArgs = {
   password: string;
 };
 
+// type PostPage = {
+//   posts: Post[];
+//   cursor: number | null;
+//   hasNextPage: boolean;
+// };
+
+// type PostCommentPage = {
+//   comments: PostComment[];
+//   cursor: number | null;
+//   hasNextPage: boolean;
+// };
+
 type UpsertReturn = {
   user: User;
   token: string;
 };
 
+type UserPaginatedArgs = {
+  id: number;
+  limit: number;
+  cursor: number;
+};
+
 const COOLDOWN_SECONDS = 60;
 const DAILY_LIMIT = 5;
+const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const userResolvers = {
   Query: {
@@ -48,7 +72,7 @@ export const userResolvers = {
         //     HttpStatus.UNAUTHORIZED,
         //     HttpMessages.UNAUTHORIZED
         //   );
-        console.log("hitting users");
+
         if (context.rateLimitError)
           return sendResponse(
             [],
@@ -68,14 +92,14 @@ export const userResolvers = {
         context: ContextObject
       ): Promise<ApiResponse<User | null>> => {
         try {
-          const authenticated = requireAuth(context); // ⛔ block if not authenticated
+          // const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
-          if (!authenticated)
-            return sendResponse(
-              null,
-              HttpStatus.UNAUTHORIZED,
-              HttpMessages.UNAUTHORIZED
-            );
+          // if (!authenticated)
+          //   return sendResponse(
+          //     null,
+          //     HttpStatus.UNAUTHORIZED,
+          //     HttpMessages.UNAUTHORIZED
+          //   );
 
           if (context.rateLimitError)
             return sendResponse(
@@ -90,8 +114,9 @@ export const userResolvers = {
             },
           });
 
-          return sendResponse(user, HttpStatus.OK, HttpMessages.OK);
+          return sendResponse(user);
         } catch (err) {
+          console.log("error");
           return sendResponse(
             null,
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -418,10 +443,154 @@ export const userResolvers = {
   },
 
   User: {
-    posts: (parent: User, _args: {}) => {
-      return prisma.post.findMany({
-        where: { userId: parent?.id },
-      });
+    posts: async (
+      parent: User,
+      _args: { data: UserPaginatedArgs },
+      context: ContextObject,
+      info: GraphQLResolveInfo
+    ): Promise<ApiResponse<Page<Post[]> | null>> => {
+      try {
+        if (!_args.data)
+          return sendResponse(
+            null,
+            HttpStatus.BAD_REQUEST,
+            HttpMessages.BAD_REQUEST
+          );
+
+        const { cursor, limit } = _args.data; //this is causing a key collision with regular fetch posts
+        const key = `gql:user:${parent?.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
+        const cached = await getJSON<Page<Post[]>>(key); //get cached value as json
+
+        if (cached) return sendResponse(cached);
+
+        const posts = await prisma.post.findMany({
+          where: { userId: parent?.id },
+          take: limit + 1, // fetch one extra to check if there's a next page
+          ...(cursor
+            ? { cursor: { id: cursor }, skip: 1 } // skip the cursor itself
+            : {}),
+        });
+
+        const hasNextPage = posts.length > limit;
+        const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
+
+        const page = {
+          data: slicedPosts,
+          cursor: hasNextPage ? slicedPosts[slicedPosts.length - 1].id : null,
+          hasNextPage,
+        };
+
+        await setJSON(key, page, POSTS_TTL_MS);
+
+        return sendResponse(page);
+      } catch (err) {
+        console.log(err);
+        return sendResponse(
+          null,
+          HttpStatus.BAD_REQUEST,
+          HttpMessages.BAD_REQUEST
+        );
+      }
+    },
+    comments: async (
+      parent: User,
+      _args: { data: UserPaginatedArgs },
+      context: ContextObject,
+      info: GraphQLResolveInfo
+    ): Promise<ApiResponse<Page<PostComment[]> | null>> => {
+      try {
+        if (!_args.data)
+          return sendResponse(
+            null,
+            HttpStatus.BAD_REQUEST,
+            HttpMessages.BAD_REQUEST
+          );
+
+        const { limit, cursor } = _args.data;
+        const key = `gql:user:${parent.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
+
+        const cached = await getJSON<Page<PostComment[]>>(key);
+        if (cached) return sendResponse(cached);
+
+        const comments = await prisma.postComment.findMany({
+          take: limit + 1,
+          where: { userId: parent?.id },
+
+          ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+          include: {
+            post: true,
+          },
+        });
+
+        const hasNextPage = comments.length > limit;
+        const slicedComments = hasNextPage ? comments.slice(0, -1) : comments;
+
+        const pageData = {
+          data: slicedComments,
+          cursor: hasNextPage
+            ? slicedComments[slicedComments.length - 1].id
+            : null,
+          hasNextPage,
+        };
+
+        await setJSON(key, pageData, POSTS_TTL_MS);
+
+        return sendResponse(pageData);
+      } catch (err) {
+        console.log(err);
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR
+        );
+      }
+    },
+    likedPosts: async (
+      parent: User,
+      _args: { data: UserPaginatedArgs },
+      context: ContextObject,
+      info: GraphQLResolveInfo
+    ): Promise<ApiResponse<Page<Like[]> | null>> => {
+      try {
+        console.log("liked posts");
+        if (!_args)
+          return sendResponse(
+            null,
+            HttpStatus.BAD_REQUEST,
+            HttpMessages.BAD_REQUEST
+          );
+
+        const { limit, cursor } = _args.data;
+        const key = `gql:user${parent?.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
+        const cached = await getJSON<Page<Like[]>>(key);
+        // if (cached) return sendResponse(cached);
+
+        const likes = await prisma.like.findMany({
+          take: limit + 1,
+          where: { userId: parent?.id, isActive: true },
+          ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+          include: { post: true },
+        });
+
+        const hasNextPage = likes.length > limit;
+        const slicedLikes = hasNextPage ? likes.slice(0, -1) : likes;
+        const page = {
+          data: slicedLikes,
+          cursor: hasNextPage ? slicedLikes[slicedLikes.length - 1].id : null,
+          hasNextPage,
+        };
+
+        setJSON(key, page, POSTS_TTL_MS);
+
+        return sendResponse(page);
+      } catch (err) {
+        console.log(err);
+        return sendResponse(
+          null,
+          HttpStatus.BAD_REQUEST,
+          HttpMessages.BAD_REQUEST
+        );
+      }
     },
   },
 };

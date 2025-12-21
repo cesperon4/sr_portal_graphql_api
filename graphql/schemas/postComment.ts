@@ -26,6 +26,23 @@ export const postCommentTypeDefs = gql`
     body: String
   }
 
+  input PostCommentInput {
+    limit: Int!
+    cursor: Int
+  }
+
+  type PostCommentPage {
+    data: [PostComment!]!
+    cursor: Int
+    hasNextPage: Boolean
+  }
+
+  type PostCommentResponse {
+    data: PostCommentPage
+    status: Int
+    message: String
+  }
+
   type Mutation {
     createPostComment(data: CreatePostCommentInput): PostComment!
     updatePostComment(id: Int!, data: UpdatePostCommentInput): PostComment!

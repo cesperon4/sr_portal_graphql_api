@@ -1,14 +1,60 @@
 //https://sr-portal-graphql-api.vercel.app
 //http://localhost:3000/api/graphql
+
 ######user
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM2OTc5NTQsImV4cCI6MTc2MzcwMTU1NH0.g2dbpaBb3L3pH79rP8Hn6D6Ig-rSzXbXoAYAFpYz69E
 
 {
   "query": "query { users { data { id firstname lastname email username createdAt updatedAt password emailVerified } message status } }"
 }
+######user
+GET https://services2.arcgis.com/BhTdzxiJkq4oXsPh/arcgis/rest/services/Santa Rosa Police Pursuits/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json&orderByFields=
+Content-Type: application/json
+
+
 ######
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer YOUR_TOKEN
+
+{
+  "query": "query GetUser($id: ID!, $limit: Int!, $cursor: Int) { user(id: $id) { data { id firstname lastname email username createdAt updatedAt posts(data: { limit: $limit, cursor: $cursor }) { data { data { id title createdAt userId } hasNextPage cursor } } } } }",
+  "variables": {
+    "id": "cmj8030tx000087mnvo2xnk5q",
+    "limit": 24,
+    "cursor": null
+  }
+}
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer YOUR_TOKEN
+
+{
+  "query": "query GetUserComments($id: ID!, $limit: Int!, $cursor: Int) { user(id: $id) { status message data { id firstname lastname email username createdAt updatedAt comments(data: { limit: $limit, cursor: $cursor }) { data { data { id body createdAt post { title } } hasNextPage cursor } message status } } } }",
+  "variables": {
+    "id": "cmj8030tx000087mnvo2xnk5q",
+    "limit": 5,
+    "cursor": null
+  }
+}
+####
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "query GetUserLikedPosts($id: ID!, $limit: Int!, $cursor: Int) { user(id: $id) { status message data { id firstname lastname email username createdAt updatedAt likedPosts(data: { limit: $limit, cursor: $cursor }) { data { data { id userId  post{ id } } hasNextPage cursor } message status } } } }",
+  "variables": {
+    "id": "cmj8030tx000087mnvo2xnk5q",
+    "limit": 5,
+    "cursor": null
+  }
+}
+####
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
@@ -48,9 +94,9 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWhtbnFzb2cwMDAwanMwZjYyMGd2cGJjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NjM2NTY1NjUsImV4cCI6MTc2MzY2MDE2NX0.eGdUNcZeiWrQuJbU1Es3dAV2bFUxSvEPWO6jUJbKLVA
 
 {
-  "query": "query GetUser($id: ID!) { user(id: $id) { id firstname lastname email username createdAt updatedAt } }",
+  "query": "query GetUser($id: ID!) { user(id: $id) { data { id firstname lastname email username createdAt updatedAt}  } }",
   "variables": {
-    "id": "cmhmnqsog0000js0f620gvpbc"
+    "id": "cmj8030tx000087mnvo2xnk5q"
   }
 }
 ######
@@ -95,7 +141,7 @@ Content-Type: application/json
 
 
 {
-  "query": "mutation {login(data:{email: \"ptiongson@gmail.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
 
 }
 ####

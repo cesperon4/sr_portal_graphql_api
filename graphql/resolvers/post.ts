@@ -15,15 +15,7 @@ import { parseLocation } from "../../helpers/stringParser";
 import { prisma } from "../../lib/prisma";
 import { type ContextObject } from "../types/context";
 import { type PostsArgs } from "../types/posts";
-import { type ApiResponse } from "../types/response";
-
-// const prisma = new PrismaClient();
-
-type PostPage = {
-  posts: Post[];
-  cursor: number | null;
-  hasNextPage: boolean;
-};
+import { type ApiResponse, type Page } from "../types/response";
 
 type MapPost = {
   id: number;
@@ -32,8 +24,6 @@ type MapPost = {
   title: string;
   date_occurred: Date;
 };
-
-// type Post = Awaited<ReturnType<typeof prisma.post.findUnique>>;
 
 type PostCategory =
   | "VA"
@@ -71,7 +61,7 @@ export const postResolvers = {
       args: { data: PostsArgs },
       context: ContextObject,
       info: GraphQLResolveInfo
-    ): Promise<ApiResponse<PostPage | null>> => {
+    ): Promise<ApiResponse<Page<Post[]> | null>> => {
       try {
         // const authenticated = requireAuth(context); // ⛔ block if not authenticated
 
@@ -95,7 +85,8 @@ export const postResolvers = {
           info.fieldName,
           args.data
         )}`; //create key using field name and argumens
-        const cached = await getJSON<PostPage>(key); //get cached value as json
+
+        const cached = await getJSON<Page<Post[]>>(key); //get cached value as json
 
         if (cached) return sendResponse(cached);
 
@@ -111,7 +102,7 @@ export const postResolvers = {
         const slicedPosts = hasNextPage ? posts.slice(0, -1) : posts;
 
         const pageData = {
-          posts: slicedPosts,
+          data: slicedPosts,
           cursor: hasNextPage ? slicedPosts[slicedPosts.length - 1].id : null,
           hasNextPage,
         };
@@ -220,6 +211,9 @@ export const postResolvers = {
       }
 
       invalidateByPrefix("gql:posts");
+      invalidateByPrefix("gql:mapPosts"); //? Check if this logic is okay
+      invalidateByPrefix("gql:user");
+
       return prisma.post.create({
         data: {
           title: args.data.title,

@@ -3,9 +3,11 @@ POST http://localhost:3000/api/graphql
 Content-Type: application/json
 
 {
-  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { status message data { posts { id title body userId createdAt updatedAt arrestLogId imageUrls likes { id isActive userId postId } city state zip street lat lon category date_occurred } cursor hasNextPage } } }",
-  "variables": { "limit": 5, "cursor": null }
+  "query": "query GetPosts($limit: Int!, $cursor: Int) { posts(data: { limit: $limit, cursor: $cursor }) { status message data { data { id title body userId createdAt updatedAt arrestLogId imageUrls likes { id isActive userId postId } city state zip street lat lon category date_occurred } cursor hasNextPage } } }",
+  "variables": { "limit": 22, "cursor": null }
 }
+
+# cmj8030tx000087mnvo2xnk5q
 
 #####
 POST http://localhost:3000/api/graphql

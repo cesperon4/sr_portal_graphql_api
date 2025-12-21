@@ -15,13 +15,14 @@ export const userTypeDefs = gql`
     email: String
     lastname: String
     username: String
-    password: String
     role: Role!
     createdAt: DateTime
     updatedAt: DateTime
-    posts: [Post]
+    posts(data: PostsInput): PostsResponse
+    comments(data: PostCommentInput): PostCommentResponse
     emailVerified: DateTime
     emailVerificationTokens: [EmailVerificationToken]
+    likedPosts(data: LikedPostInput): LikedPostResponse
   }
 
   type EmailVerificationToken {
@@ -39,6 +40,12 @@ export const userTypeDefs = gql`
     message: String
   }
 
+  type ApiUserResponse {
+    status: Int
+    data: User
+    message: String
+  }
+
   type UpsertUserData {
     user: User
     token: String
@@ -52,7 +59,7 @@ export const userTypeDefs = gql`
 
   type Query {
     users: ApiUsersResponse
-    user(id: ID!): User!
+    user(id: ID!): ApiUserResponse!
     me: User!
     chatBotResponse(prompt: String!): String!
   }
