@@ -33,6 +33,7 @@ export async function getJSON<T>(key: string): Promise<T | null> {
 }
 
 export async function invalidateByPrefix(prefix: string) {
+  console.log("invalidating prefix: ", prefix);
   const stream = redis.scanStream({ match: `${prefix}*`, count: 100 });
   const pipeline = redis.pipeline();
   let count = 0;

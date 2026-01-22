@@ -499,6 +499,7 @@ export const userResolvers = {
       info: GraphQLResolveInfo
     ): Promise<ApiResponse<Page<PostComment[]> | null>> => {
       try {
+        console.log("hitting comments123");
         if (!_args.data)
           return sendResponse(
             null,
@@ -510,7 +511,11 @@ export const userResolvers = {
         const key = `gql:user:${parent.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
 
         const cached = await getJSON<Page<PostComment[]>>(key);
-        if (cached) return sendResponse(cached);
+        console.log("cached: ", cached);
+        if (cached) {
+          console.log("hitting comment cache: ", cached);
+          return sendResponse(cached);
+        }
 
         const comments = await prisma.postComment.findMany({
           take: limit + 1,
@@ -563,7 +568,7 @@ export const userResolvers = {
         const { limit, cursor } = _args.data;
         const key = `gql:user${parent?.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
         const cached = await getJSON<Page<Like[]>>(key);
-        // if (cached) return sendResponse(cached);
+        if (cached) return sendResponse(cached);
 
         const likes = await prisma.like.findMany({
           take: limit + 1,

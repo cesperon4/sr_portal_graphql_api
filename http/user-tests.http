@@ -2,7 +2,7 @@
 //http://localhost:3000/api/graphql
 
 ######user
-POST https://sr-portal-graphql-api.vercel.app/api/graphql
+POST http://localhost:3000/api/graphql
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM2OTc5NTQsImV4cCI6MTc2MzcwMTU1NH0.g2dbpaBb3L3pH79rP8Hn6D6Ig-rSzXbXoAYAFpYz69E
 

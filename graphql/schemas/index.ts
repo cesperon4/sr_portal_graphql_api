@@ -4,6 +4,7 @@ import { arrestLogTypeDefs } from "./arrestLog";
 import { likeTypeDefs } from "./like";
 import { postTypeDefs } from "./post";
 import { postCommentTypeDefs } from "./postComment";
+import { stripeTypeDefs } from "./stripe";
 import { userTypeDefs } from "./user";
 
 export const typeDefs = [
@@ -16,4 +17,5 @@ export const typeDefs = [
   postCommentTypeDefs,
   arrestLogTypeDefs,
   likeTypeDefs,
+  stripeTypeDefs,
 ];
