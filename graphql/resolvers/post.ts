@@ -60,7 +60,7 @@ export const postResolvers = {
       _parent: unknown,
       args: { data: PostsArgs },
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<Page<Post[]> | null>> => {
       try {
         // const authenticated = requireAuth(context); // ⛔ block if not authenticated
@@ -72,18 +72,20 @@ export const postResolvers = {
         //     HttpMessages.UNAUTHORIZED
         //   );
 
+        console.log("context: ", context.req.cookies.refreshToken);
+
         if (!args.data)
           return sendResponse(
             null,
             HttpStatus.BAD_REQUEST,
-            HttpMessages.BAD_REQUEST
+            HttpMessages.BAD_REQUEST,
           );
 
         const { limit, cursor } = args.data;
 
         const key = `gql:${info.fieldName}:${makeCacheKey(
           info.fieldName,
-          args.data
+          args.data,
         )}`; //create key using field name and argumens
 
         const cached = await getJSON<Page<Post[]>>(key); //get cached value as json
@@ -115,7 +117,7 @@ export const postResolvers = {
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
@@ -132,7 +134,7 @@ export const postResolvers = {
       _parent: unknown,
       args: unknown,
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<MapPost[] | null>> => {
       try {
         const key = `gql:${info.fieldName}:${makeCacheKey(info.fieldName, null)}`;
@@ -159,7 +161,7 @@ export const postResolvers = {
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
@@ -168,7 +170,7 @@ export const postResolvers = {
     createPost: async (
       _parent: unknown,
       args: { data: CreatePostArgs },
-      context: ContextObject
+      context: ContextObject,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
@@ -178,7 +180,7 @@ export const postResolvers = {
       // 1️⃣ Upload images if provided
 
       const { street, city, state, zip } = parseLocation(
-        args.data.locationName
+        args.data.locationName,
       );
 
       if (args.data.imageBase64?.length > 0) {
@@ -204,7 +206,7 @@ export const postResolvers = {
               .getPublicUrl(fileName);
             console.log("public data: ", publicData.publicUrl);
             return publicData.publicUrl;
-          }
+          },
         );
 
         imageUrls = await Promise.all(uploadPromises);
@@ -240,7 +242,7 @@ export const postResolvers = {
     updatePost: (
       _parent: unknown,
       args: { id: number; data: Partial<CreatePostArgs> },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 

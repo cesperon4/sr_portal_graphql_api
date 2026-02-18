@@ -12,8 +12,6 @@ import {
   type ContextUser,
 } from "../../graphql/types/context";
 import { type ApiResponse } from "../../graphql/types/response";
-import { sendResponse } from "../../lib/apiResponse";
-import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 
 // CORS setup
 const cors = Cors({
@@ -57,11 +55,11 @@ const server = new ApolloServer({
       "Access-Control-Allow-Origin",
       process.env.NODE_ENV === "development"
         ? "http://localhost:3001"
-        : "https://sr-portal-gamma.vercel.app"
+        : "https://sr-portal-gamma.vercel.app",
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
+      "Origin, X-Requested-With, Content-Type, Accept",
     );
 
     const token = (req.headers.authorization || "").replace("Bearer ", "");
@@ -72,12 +70,8 @@ const server = new ApolloServer({
         const payload = jwt.verify(token, process.env.JWT_SECRET!);
         user = payload as ContextUser;
       } catch (err) {
-        console.log("err in context: ", err);
-        return sendResponse(
-          [],
-          HttpStatus.BAD_REQUEST,
-          HttpMessages.BAD_REQUEST
-        );
+        console.log("expired or invalid token: ", err);
+        user = null;
       }
     }
 
@@ -89,7 +83,7 @@ const startServer = server.start();
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   await runCorsMiddleware(req, res);
 

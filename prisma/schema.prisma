@@ -24,6 +24,17 @@ model User {
   posts                   Post[]
   postComments            PostComment[]
   likes                   Like[]
+  stripeId                String?
+  refreshToken            RefreshToken? 
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model EmailVerificationToken {

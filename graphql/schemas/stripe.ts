@@ -1,9 +1,18 @@
 import { gql } from "apollo-server-micro";
 
 export const stripeTypeDefs = gql`
+  type PaymentIntentData {
+    clientSecret: String
+    paymentIntentId: String
+    amount: Int
+    currency: String
+    status: String
+    livemode: Boolean
+  }
+
   type ApiStripeResponse {
     status: Int
-    data: { clientSecret: string }
+    data: PaymentIntentData
     message: String
   }
 
@@ -11,7 +20,12 @@ export const stripeTypeDefs = gql`
     amount: Int!
   }
 
+  input Plan {
+    type: String
+    billingCycle: String
+  }
+
   type Mutation {
-    createPaymentIntent(data: CreatePaymentIntentInput): ApiStripeResponse
+    createPaymentIntent(data: Plan): ApiStripeResponse
   }
 `;

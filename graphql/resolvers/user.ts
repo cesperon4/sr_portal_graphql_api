@@ -1,8 +1,6 @@
 import bcrypt from "bcryptjs";
-import { serialize } from "cookie";
 import { type GraphQLResolveInfo } from "graphql";
 import jwt from "jsonwebtoken";
-import { NextApiResponse } from "next";
 import {
   type Like,
   type Post,
@@ -28,6 +26,12 @@ type CreateUserArgs = {
   role: "USER" | "GUEST";
   password: string;
 };
+
+import {
+  clearRefreshTokenCookie,
+  setRefreshTokenCookie,
+} from "../../helpers/cookie";
+import { generateAccessToken, generateRefreshToken } from "../../helpers/token";
 
 // type PostPage = {
 //   posts: Post[];
@@ -63,33 +67,33 @@ export const userResolvers = {
         _parent: unknown,
         args: {},
         context: ContextObject,
-        info: GraphQLResolveInfo
+        info: GraphQLResolveInfo,
       ): Promise<ApiResponse<User[]>> => {
-        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
-        // if (!authenticated)
-        //   return sendResponse(
-        //     [],
-        //     HttpStatus.UNAUTHORIZED,
-        //     HttpMessages.UNAUTHORIZED
-        //   );
+        const authenticated = requireAuth(context); // ⛔ block if not authenticated
+        if (!authenticated)
+          return sendResponse(
+            [],
+            HttpStatus.UNAUTHORIZED,
+            HttpMessages.UNAUTHORIZED,
+          );
 
         if (context.rateLimitError)
           return sendResponse(
             [],
             HttpStatus.INTERNAL_SERVER_ERROR,
-            HttpMessages.RATE_LIMIT_ERROR
+            HttpMessages.RATE_LIMIT_ERROR,
           );
         const users = await prisma.user.findMany();
         return sendResponse(users, HttpStatus.OK, HttpMessages.OK);
       },
-      "query"
+      "query",
     ),
 
     user: withRateLimit(
       async (
         _parent: unknown,
         args: { id: string },
-        context: ContextObject
+        context: ContextObject,
       ): Promise<ApiResponse<User | null>> => {
         try {
           // const authenticated = requireAuth(context); // ⛔ block if not authenticated
@@ -105,7 +109,7 @@ export const userResolvers = {
             return sendResponse(
               null,
               HttpStatus.INTERNAL_SERVER_ERROR,
-              HttpMessages.RATE_LIMIT_ERROR
+              HttpMessages.RATE_LIMIT_ERROR,
             );
 
           const user = await prisma.user.findUnique({
@@ -120,11 +124,11 @@ export const userResolvers = {
           return sendResponse(
             null,
             HttpStatus.INTERNAL_SERVER_ERROR,
-            HttpMessages.INTERNAL_SERVER_ERROR
+            HttpMessages.INTERNAL_SERVER_ERROR,
           );
         }
       },
-      "query"
+      "query",
     ),
 
     me: async (_parent: unknown, _args: {}, context: any) => {
@@ -150,7 +154,7 @@ export const userResolvers = {
     registerUser: async (
       _parent: unknown,
       args: { data: CreateUserArgs },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
       try {
@@ -225,7 +229,7 @@ export const userResolvers = {
 
     resendVerificationEmail: async (
       _parent: unknown,
-      args: { email: string }
+      args: { email: string },
     ) => {
       const { email } = args;
       const user = await prisma.user.findUnique({ where: { email } });
@@ -278,7 +282,7 @@ export const userResolvers = {
         args: {
           data: CreateUserArgs & Partial<CreateUserArgs>;
         },
-        context: any
+        context: any,
       ): Promise<ApiResponse<UpsertReturn | null>> => {
         try {
           const username = args.data.email.split("@")[0]; // simple default username
@@ -307,7 +311,7 @@ export const userResolvers = {
             process.env.JWT_SECRET!,
             {
               expiresIn: "1h",
-            }
+            },
           );
 
           return sendResponse({ user, token }, HttpStatus.OK, HttpMessages.OK);
@@ -316,19 +320,18 @@ export const userResolvers = {
           return sendResponse(
             null,
             HttpStatus.INTERNAL_SERVER_ERROR,
-            HttpMessages.INTERNAL_SERVER_ERROR
+            HttpMessages.INTERNAL_SERVER_ERROR,
           );
         }
       },
-      "mutation"
+      "mutation",
     ),
     updateUser: (
       _parent: unknown,
       args: { id: string; data: Partial<CreateUserArgs> },
-      context: any
+      context: any,
     ) => {
       requireAuth(context); // ⛔ block if not authenticated
-      console.log("update user");
       return prisma.user.update({
         where: {
           id: args.id,
@@ -351,7 +354,7 @@ export const userResolvers = {
     login: async (
       _parent: unknown,
       args: { data: { email: string; password: string } },
-      context: { res: NextApiResponse }
+      context: ContextObject,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
@@ -364,80 +367,35 @@ export const userResolvers = {
       if (!user) {
         throw new Error("User not found");
       }
-
-      // if (!user.emailVerified) {
-      //   throw new Error("Email not verified");
-      // }
-
+      if (!user.emailVerified) {
+        throw new Error("Email not verified");
+      }
       const isValid = await bcrypt.compare(args.data.password, user.password);
-
       if (!isValid) {
         throw new Error("Invalid password");
       }
 
-      const token = jwt.sign(
-        {
-          userId: user.id,
-          role: "USER", // distinguish guest from full user
-        },
-        process.env.JWT_SECRET!,
-        {
-          expiresIn: "1h",
-        }
-      );
+      const refreshToken = await generateRefreshToken(user.id, "USER");
+      const accessToken = generateAccessToken(user.id, "USER");
 
-      // browser blocking
-      context.res.setHeader(
-        //previously commented
-        "Set-Cookie",
-        serialize("token", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // true in production
-          // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // or "Strict" if you prefer tighter CSRF protection
-          maxAge: 60 * 60, // 1 hour
-          path: "/",
-        })
-      );
+      setRefreshTokenCookie(context, refreshToken);
 
       return {
         user,
-        token,
+        accessToken,
       };
     },
 
-    loginGuest: async (
-      _parent: unknown,
-      args: {},
-      context: { res: NextApiResponse }
-    ) => {
+    loginGuest: async (_parent: unknown, args: {}, context: ContextObject) => {
       const token = jwt.sign({ role: "GUEST" }, process.env.JWT_SECRET!, {
         expiresIn: "1h",
       });
-
-      context.res.setHeader(
-        //cookie header set
-        "Set-Cookie",
-        serialize("token", token, {
-          httpOnly: true, // ✅ secure: hides cookie from JS
-          secure: process.env.NODE_ENV === "production", // ✅ must be true in production (HTTPS only)
-          // sameSite: "lax", // or "Strict" if you prefer tighter CSRF protection
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ required for cross-site cookies
-          maxAge: 60 * 60, // 1 hour
-          path: "/",
-        })
-      );
 
       return { token };
     },
 
     logout: async (_parent: any, _args: any, context: ContextObject) => {
-      // context.res.setHeader("Set-Cookie", [
-      //   //set cookie max age to expire
-      //   `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; Secure=${
-      //     process.env.NODE_ENV === "production"
-      //   }`,
-      // ]);
+      clearRefreshTokenCookie(context);
       return true;
     },
   },
@@ -447,14 +405,14 @@ export const userResolvers = {
       parent: User,
       _args: { data: UserPaginatedArgs },
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<Page<Post[]> | null>> => {
       try {
         if (!_args.data)
           return sendResponse(
             null,
             HttpStatus.BAD_REQUEST,
-            HttpMessages.BAD_REQUEST
+            HttpMessages.BAD_REQUEST,
           );
 
         const { cursor, limit } = _args.data; //this is causing a key collision with regular fetch posts
@@ -488,7 +446,7 @@ export const userResolvers = {
         return sendResponse(
           null,
           HttpStatus.BAD_REQUEST,
-          HttpMessages.BAD_REQUEST
+          HttpMessages.BAD_REQUEST,
         );
       }
     },
@@ -496,24 +454,21 @@ export const userResolvers = {
       parent: User,
       _args: { data: UserPaginatedArgs },
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<Page<PostComment[]> | null>> => {
       try {
-        console.log("hitting comments123");
         if (!_args.data)
           return sendResponse(
             null,
             HttpStatus.BAD_REQUEST,
-            HttpMessages.BAD_REQUEST
+            HttpMessages.BAD_REQUEST,
           );
 
         const { limit, cursor } = _args.data;
         const key = `gql:user:${parent.id}:${info.fieldName}:${makeCacheKey(info.fieldName, _args.data)}`;
 
         const cached = await getJSON<Page<PostComment[]>>(key);
-        console.log("cached: ", cached);
         if (cached) {
-          console.log("hitting comment cache: ", cached);
           return sendResponse(cached);
         }
 
@@ -546,7 +501,7 @@ export const userResolvers = {
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
@@ -554,15 +509,14 @@ export const userResolvers = {
       parent: User,
       _args: { data: UserPaginatedArgs },
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<Page<Like[]> | null>> => {
       try {
-        console.log("liked posts");
         if (!_args)
           return sendResponse(
             null,
             HttpStatus.BAD_REQUEST,
-            HttpMessages.BAD_REQUEST
+            HttpMessages.BAD_REQUEST,
           );
 
         const { limit, cursor } = _args.data;
@@ -593,7 +547,7 @@ export const userResolvers = {
         return sendResponse(
           null,
           HttpStatus.BAD_REQUEST,
-          HttpMessages.BAD_REQUEST
+          HttpMessages.BAD_REQUEST,
         );
       }
     },

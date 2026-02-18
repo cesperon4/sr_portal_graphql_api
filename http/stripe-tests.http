@@ -4,10 +4,12 @@ Content-Type: application/json
 Authorization: Bearer YOUR_JWT_HERE
 
 {
-  "query": "mutation CreatePaymentIntent($data: CreatePaymentIntentInput) { createPaymentIntent(data: $data) { data { clientSecret} message status } }",
+  "query": "mutation CreatePaymentIntent($data: Plan) { createPaymentIntent(data: $data) { data { clientSecret amount currency status } message status } }",
   "variables": {
     "data": {
-      "amount": 5000
+      "type": "free",
+      "billingCycle": "monthly"
+    
     }
   }
 }

@@ -94,7 +94,7 @@ export const userTypeDefs = gql`
 
   type AuthPayload {
     user: User!
-    token: Token!
+    accessToken: Token!
   }
 
   type GuestPayload {
