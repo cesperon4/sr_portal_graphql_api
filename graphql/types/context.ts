@@ -28,3 +28,11 @@ export type ContextObject = {
   rateLimitInfo?: RateLimitInfo;
   rateLimitError?: boolean;
 };
+
+export function isUser(user: ContextUser): user is SignedUser {
+  return user.role === "USER";
+}
+
+export function isGuest(user: ContextUser): user is SignedGuest {
+  return user.role === "GUEST";
+}

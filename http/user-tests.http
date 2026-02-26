@@ -4,10 +4,10 @@
 ######user
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiR1VFU1QiLCJpYXQiOjE3NjM2OTc5NTQsImV4cCI6MTc2MzcwMTU1NH0.g2dbpaBb3L3pH79rP8Hn6D6Ig-rSzXbXoAYAFpYz69E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWxxMHQ4cHMwMDAwMDRrdjRtd2hhbTNjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NzEzMTM3MzksImV4cCI6MTc3MTMxMzc0OX0.1ufWfjjcXyz92NvmuNJvWmlJTpOHn8H48bYJwyG6iek
 
 {
-  "query": "query { users { data { id firstname lastname email username createdAt updatedAt password emailVerified } message status } }"
+  "query": "query { users { data { id firstname lastname email username createdAt updatedAt emailVerified } message status } }"
 }
 ######user
 GET https://services2.arcgis.com/BhTdzxiJkq4oXsPh/arcgis/rest/services/Santa Rosa Police Pursuits/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json&orderByFields=
@@ -116,9 +116,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiL
 
 
 {
-  "query": "mutation { upsertUser(data: { firstname: \"Johss\", lastname: \"Does\", email: \"johnss.does@example.com\"}) { data {user {id} token } message } }"
+  "query": "mutation { upsertUser(data: { firstname: \"Johss\", lastname: \"Does\", email: \"johnss.does@example.com\"}) { data {user {id} token refreshToken } message } }"
 }
 
+######
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation { updateUser(id: \"cmhmnqsog0000js0f620gvpbc\", data: { firstname: \"Christian\", lastname: \"Esperon\", emailVerified: \"true\"}) { id firstname lastname email username createdAt updatedAt } }"
+}
+######
 ######
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
@@ -137,12 +145,21 @@ Content-Type: application/json
 ####
 POST http://localhost:3000/api/graphql
 Content-Type: application/json
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiZ3Vlc3QiLCJpYXQiOjE3NjIzODc2MDUsImV4cCI6MTc2MjM5MTIwNX0.26hkNLuWmJiin1yxFMhgQNe-qMsKPgoCUdfONwgtGrg
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWxxMHQ4cHMwMDAwMDRrdjRtd2hhbTNjIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NzEzMTM3MzksImV4cCI6MTc3MTMxMzc0OX0.1ufWfjjcXyz92NvmuNJvWmlJTpOHn8H48bYJwyG6iek
 
 
 {
-  "query": "mutation {login(data:{email: \"cesperon4@gmail.com\", password: \"test123\"}){user{id role} token}}"
+  "query": "mutation {login(data:{email: \"ptiongson@gmail.com\", password: \"test123\"}){user{id role} accessToken}}"
 
+}
+
+###### refresh (uses refreshToken cookie – run login above first and copy Set-Cookie refreshToken value, or use Cookie from browser)
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Cookie: refreshToken=YOUR_REFRESH_TOKEN_HERE
+
+{
+  "query": "mutation { refresh { data status message } }"
 }
 ####
 POST https://sr-portal-graphql-api.vercel.app/api/graphql
@@ -165,7 +182,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbWFyZ
 }
 
 ####
-POST http://localhost:3000/api/graphql
+POST https://sr-portal-graphql-api.vercel.app/api/graphql
 Content-Type: application/json
 
 {

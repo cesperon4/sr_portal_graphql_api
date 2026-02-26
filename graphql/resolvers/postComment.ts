@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 // const prisma = new PrismaClient();
+import { invalidateByPrefix } from "../../services/cache";
 
 type PostComment = Awaited<ReturnType<typeof prisma.postComment.findUnique>>;
 
@@ -34,6 +35,8 @@ export const postCommentResolvers = {
       context: any
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
+      console.log("invalidating user");
+      invalidateByPrefix("gql:user");
 
       return prisma.postComment.create({
         data: {

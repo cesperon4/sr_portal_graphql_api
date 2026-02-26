@@ -11,6 +11,8 @@ import {
   setJSON,
 } from "../../services/cache";
 
+import { GraphQLError } from "graphql";
+import { requireAuth } from "../../helpers/auth";
 import { parseLocation } from "../../helpers/stringParser";
 import { prisma } from "../../lib/prisma";
 import { type ContextObject } from "../types/context";
@@ -60,30 +62,26 @@ export const postResolvers = {
       _parent: unknown,
       args: { data: PostsArgs },
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<Page<Post[]> | null>> => {
+      const authenticated = requireAuth(context); // ⛔ block if not authenticated
+      if (!authenticated)
+        throw new GraphQLError("Unauthorized", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+
+      if (!args.data)
+        return sendResponse(
+          null,
+          HttpStatus.BAD_REQUEST,
+          HttpMessages.BAD_REQUEST,
+        );
       try {
-        // const authenticated = requireAuth(context); // ⛔ block if not authenticated
-
-        // if (!authenticated)
-        //   return sendResponse(
-        //     null,
-        //     HttpStatus.UNAUTHORIZED,
-        //     HttpMessages.UNAUTHORIZED
-        //   );
-
-        if (!args.data)
-          return sendResponse(
-            null,
-            HttpStatus.BAD_REQUEST,
-            HttpMessages.BAD_REQUEST
-          );
-
         const { limit, cursor } = args.data;
 
         const key = `gql:${info.fieldName}:${makeCacheKey(
           info.fieldName,
-          args.data
+          args.data,
         )}`; //create key using field name and argumens
 
         const cached = await getJSON<Page<Post[]>>(key); //get cached value as json
@@ -112,11 +110,9 @@ export const postResolvers = {
         return sendResponse(pageData);
       } catch (err) {
         console.log(err);
-        return sendResponse(
-          null,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
-        );
+        throw new GraphQLError("Internal server error", {
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        });
       }
     },
     post: async (_parent: unknown, args: { id: number }, context: any) => {
@@ -132,7 +128,7 @@ export const postResolvers = {
       _parent: unknown,
       args: unknown,
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<MapPost[] | null>> => {
       try {
         const key = `gql:${info.fieldName}:${makeCacheKey(info.fieldName, null)}`;
@@ -159,7 +155,7 @@ export const postResolvers = {
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
@@ -168,7 +164,7 @@ export const postResolvers = {
     createPost: async (
       _parent: unknown,
       args: { data: CreatePostArgs },
-      context: ContextObject
+      context: ContextObject,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
@@ -178,7 +174,7 @@ export const postResolvers = {
       // 1️⃣ Upload images if provided
 
       const { street, city, state, zip } = parseLocation(
-        args.data.locationName
+        args.data.locationName,
       );
 
       if (args.data.imageBase64?.length > 0) {
@@ -204,7 +200,7 @@ export const postResolvers = {
               .getPublicUrl(fileName);
             console.log("public data: ", publicData.publicUrl);
             return publicData.publicUrl;
-          }
+          },
         );
 
         imageUrls = await Promise.all(uploadPromises);
@@ -240,7 +236,7 @@ export const postResolvers = {
     updatePost: (
       _parent: unknown,
       args: { id: number; data: Partial<CreatePostArgs> },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 

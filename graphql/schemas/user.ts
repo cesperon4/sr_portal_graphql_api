@@ -49,6 +49,7 @@ export const userTypeDefs = gql`
   type UpsertUserData {
     user: User
     token: String
+    refreshToken: String
   }
 
   type ApiUpsertUserResponse {
@@ -94,7 +95,7 @@ export const userTypeDefs = gql`
 
   type AuthPayload {
     user: User!
-    token: Token!
+    accessToken: Token!
   }
 
   type GuestPayload {

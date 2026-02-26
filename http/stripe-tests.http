@@ -1,0 +1,16 @@
+###### user
+POST http://localhost:3000/api/graphql
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_HERE
+
+{
+  "query": "mutation CreatePaymentIntent($data: Plan) { createPaymentIntent(data: $data) { data { clientSecret amount currency status } message status } }",
+  "variables": {
+    "data": {
+      "type": "free",
+      "billingCycle": "monthly"
+    
+    }
+  }
+}
+######
