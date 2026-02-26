@@ -24,8 +24,8 @@ export async function generateRefreshToken(userId: string, role: string) {
       data: {
         tokenHash: tokenHash,
         userId: userId,
-        // expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-        expires: new Date(Date.now() + 10 * 1000), // 10 seconds - for testing
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+        // expires: new Date(Date.now() + 10 * 1000), // 10 seconds - for testing
       },
     });
   } catch (err) {
