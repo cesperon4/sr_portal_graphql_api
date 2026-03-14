@@ -69,9 +69,10 @@ export async function invalidateRefreshToken(context: ContextObject) {
     await prisma.refreshToken.delete({
       where: { tokenHash: hash },
     });
-
+    console.log("refresh token deleted in invalidateRefreshToken");
     return true;
   } catch (err) {
+    console.log("error in invalidateRefreshToken: ", err);
     return false;
   }
 }
