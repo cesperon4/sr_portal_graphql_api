@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import type { Logger } from "pino";
 
 type SignedGuest = {
   role: "GUEST";
@@ -25,6 +26,8 @@ export type ContextObject = {
   res: NextApiResponse;
   user: ContextUser | null;
   ip: string | null;
+  requestId: string;
+  logger: Logger;
   rateLimitInfo?: RateLimitInfo;
   rateLimitError?: boolean;
 };

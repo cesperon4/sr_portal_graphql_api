@@ -103,7 +103,7 @@ export const userTypeDefs = gql`
   }
 
   type Mutation {
-    registerUser(data: CreateUserInput): Boolean!
+    registerUser(data: CreateUserInput!): ApiUserResponse!
     verifyEmail(token: Token!): Boolean!
     resendVerificationEmail(email: String!): Boolean!
     updateUser(id: ID!, data: UpdateUserInput): User!

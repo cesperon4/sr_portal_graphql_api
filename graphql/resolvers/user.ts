@@ -15,7 +15,9 @@ import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { prisma } from "../../lib/prisma";
 import { redis } from "../../lib/redis";
 import { withRateLimit } from "../../lib/withRateLimit";
+import { CreateUserSchema } from "../../schemas/user.schema";
 import { getJSON, makeCacheKey, setJSON } from "../../services/cache";
+import { RegisterUserService } from "../../services/user_service";
 import { type ContextObject } from "../types/context";
 import { type ApiResponse, type Page } from "../types/response";
 type CreateUserArgs = {
@@ -36,6 +38,7 @@ import {
   generateRefreshToken,
   invalidateRefreshToken,
 } from "../../helpers/token";
+import { logger } from "../../lib/logger";
 import { isGuest } from "../types/context";
 
 // type PostPage = {
@@ -49,6 +52,10 @@ import { isGuest } from "../types/context";
 //   cursor: number | null;
 //   hasNextPage: boolean;
 // };
+
+class EmailInUseError extends Error {
+  code = "EMAIL_IN_USE";
+}
 
 type UpsertReturn = {
   user: User;
@@ -75,13 +82,14 @@ export const userResolvers = {
         info: GraphQLResolveInfo,
       ): Promise<ApiResponse<User[]>> => {
         const authenticated = requireAuth(context); // ⛔ block if not authenticated
-        if (!authenticated)
+        if (!authenticated) {
+          logger.warn("invalid or expired JWT");
           return sendResponse(
             [],
             HttpStatus.UNAUTHORIZED,
             HttpMessages.UNAUTHORIZED,
           );
-
+        }
         if (context.rateLimitError)
           return sendResponse(
             [],
@@ -101,27 +109,31 @@ export const userResolvers = {
         context: ContextObject,
       ): Promise<ApiResponse<User | null>> => {
         try {
-          // const authenticated = requireAuth(context); // ⛔ block if not authenticated
-
-          // if (!authenticated)
-          //   return sendResponse(
-          //     null,
-          //     HttpStatus.UNAUTHORIZED,
-          //     HttpMessages.UNAUTHORIZED
-          //   );
-
-          if (context.rateLimitError)
+          const authenticated = requireAuth(context); // ⛔ block if not authenticated
+          if (!authenticated) {
+            context.logger.warn("invalid or expired JWTs");
+            return sendResponse(
+              null,
+              HttpStatus.UNAUTHORIZED,
+              HttpMessages.UNAUTHORIZED,
+            );
+          }
+          if (context.rateLimitError) {
+            context.logger.warn("rate limit has been exceed");
             return sendResponse(
               null,
               HttpStatus.INTERNAL_SERVER_ERROR,
               HttpMessages.RATE_LIMIT_ERROR,
             );
+          }
 
           const user = await prisma.user.findUnique({
             where: {
               id: args.id,
             },
           });
+
+          console.log("successfull send response");
 
           return sendResponse(user);
         } catch (err) {
@@ -138,9 +150,6 @@ export const userResolvers = {
 
     me: async (_parent: unknown, _args: {}, context: ContextObject) => {
       const authenticated = requireAuth(context); // ⛔ block if not authenticated
-
-      console.log("authenticated in me: ", authenticated);
-      console.log("context.user in me: ", context.user);
 
       if (!authenticated || !context.user || isGuest(context.user))
         throw new Error("Unauthorized");
@@ -172,45 +181,13 @@ export const userResolvers = {
     registerUser: async (
       _parent: unknown,
       args: { data: CreateUserArgs },
-      context: any,
+      _context: ContextObject,
     ) => {
-      // requireAuth(context); // ⛔ block if not authenticated
       try {
-        const existing = await prisma.user.findUnique({
-          where: { email: args.data.email },
-        });
-        if (existing) throw new Error("Email already in use");
+        const parsed = CreateUserSchema.parse(args.data);
+        const user = await RegisterUserService(parsed);
 
-        const hashedPassword = await bcrypt.hash(args.data.password, 10);
-
-        const user = await prisma.user.create({
-          data: {
-            firstname: args.data.firstname,
-            lastname: args.data.lastname,
-            username: args.data.username,
-            password: hashedPassword,
-            role: args.data.role,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            email: args.data.email,
-          },
-        });
-
-        const { raw, hash } = createVerificationToken();
-        const expires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h
-
-        await prisma.emailVerificationToken.create({
-          data: {
-            tokenHash: hash,
-            userId: user.id,
-            expires,
-          },
-        });
-
-        await sendVerificationEmail(args.data.email, raw);
-
-        // return user;
-        return true;
+        return sendResponse(user, HttpStatus.CREATED, HttpMessages.CREATED);
       } catch (error) {
         console.log("error: ", error);
       }

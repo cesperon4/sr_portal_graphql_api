@@ -22,7 +22,7 @@ export const arrestLogResolvers = {
       _parent: unknown,
       _args: unknown,
       context: ContextObject,
-      info: GraphQLResolveInfo
+      info: GraphQLResolveInfo,
     ): Promise<ApiResponse<ArrestLog[]>> => {
       try {
         const authenticated = requireAuth(context); // ⛔ block if not authenticated
@@ -31,7 +31,7 @@ export const arrestLogResolvers = {
           return sendResponse(
             [],
             HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
+            HttpMessages.UNAUTHORIZED,
           );
 
         const key = `gql:${makeCacheKey(info.fieldName, null)}`;
@@ -46,7 +46,7 @@ export const arrestLogResolvers = {
         return sendResponse(
           [],
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
@@ -54,7 +54,7 @@ export const arrestLogResolvers = {
     arrestLog: async (
       _parent: unknown,
       args: { id: number },
-      context: ContextObject
+      context: ContextObject,
     ): Promise<ApiResponse<ArrestLog | null>> => {
       try {
         // requireAuth(context); // ⛔ block if not authenticated
@@ -64,14 +64,14 @@ export const arrestLogResolvers = {
           return sendResponse(
             null,
             HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
+            HttpMessages.UNAUTHORIZED,
           );
 
         if (!requireArguments(args))
           return sendResponse(
             null,
             HttpStatus.INTERNAL_SERVER_ERROR,
-            HttpMessages.INTERNAL_SERVER_ERROR
+            HttpMessages.INTERNAL_SERVER_ERROR,
           );
 
         const arrest_log = await prisma.arrestLog.findUnique({
@@ -83,23 +83,24 @@ export const arrestLogResolvers = {
         return sendResponse(
           arrest_log,
           arrest_log ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-          arrest_log ? HttpMessages.OK : HttpMessages.NOT_FOUND
+          arrest_log ? HttpMessages.OK : HttpMessages.NOT_FOUND,
         );
       } catch (err) {
         console.log("server error in arrestLog query");
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
   },
+
   Mutation: {
     createArrestLog: async (
       _parent: unknown,
       args: { data: Partial<ArrestLog> },
-      context: ContextObject
+      context: ContextObject,
     ): Promise<ApiResponse<ArrestLog | null>> => {
       try {
         const authenticated = requireAuth(context); // ⛔ block if not authenticated
@@ -108,14 +109,14 @@ export const arrestLogResolvers = {
           return sendResponse(
             null,
             HttpStatus.UNAUTHORIZED,
-            HttpMessages.UNAUTHORIZED
+            HttpMessages.UNAUTHORIZED,
           );
 
         if (!requireArguments(args))
           return sendResponse(
             null,
             HttpStatus.INTERNAL_SERVER_ERROR,
-            HttpMessages.INTERNAL_SERVER_ERROR
+            HttpMessages.INTERNAL_SERVER_ERROR,
           );
 
         const arrest_log = await prisma.arrestLog.create({
@@ -158,14 +159,14 @@ export const arrestLogResolvers = {
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpMessages.INTERNAL_SERVER_ERROR
+          HttpMessages.INTERNAL_SERVER_ERROR,
         );
       }
     },
     updateArrestLog: (
       _parent: unknown,
       args: UpdateArrestLogArgs,
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
       invalidateByPrefix("gql:arrestLogs");

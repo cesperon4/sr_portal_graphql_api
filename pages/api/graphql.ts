@@ -12,6 +12,9 @@ import {
   type ContextUser,
 } from "../../graphql/types/context";
 import { type ApiResponse } from "../../graphql/types/response";
+import { sendResponse } from "../../lib/apiResponse";
+import { HttpMessages, HttpStatus } from "../../lib/constants/http";
+import { logger } from "../../lib/logger";
 
 // CORS setup
 const cors = Cors({
@@ -45,7 +48,9 @@ const server = new ApolloServer({
   }): Promise<ContextObject | ApiResponse<[]>> => {
     if (!req || !res) throw new Error("Missing req or res");
 
-    console.log("req: ", req.body);
+    //always reuse requestId if possible so we can correlate id's
+    const requestId =
+      (req.headers["x-request-id"] as string) ?? crypto.randomUUID();
 
     const ip =
       req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
@@ -63,6 +68,7 @@ const server = new ApolloServer({
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept",
     );
+    res.setHeader("x-request-id", requestId);
 
     const token = (req.headers.authorization || "").replace("Bearer ", "");
     let user: ContextUser | null = null;
@@ -74,12 +80,28 @@ const server = new ApolloServer({
       } catch (err) {
         console.log("expired or invalid token: ", err);
         user = null;
+        logger.warn({ err }, "invalid or expired JWT");
+        sendResponse(null, HttpStatus.UNAUTHORIZED, HttpMessages.UNAUTHORIZED);
       }
     }
 
-    console.log("user in context: ", user);
+    const reqLogger = logger.child({
+      requestId,
+      ip,
+      userId: user && "userId" in user ? user.userId : null,
+      role: user?.role ?? null,
+    });
 
-    return { req, res, user, ip };
+    reqLogger.info(
+      {
+        method: req.method,
+        url: req.url,
+        userAgent: req.headers["user-agent"],
+      },
+      "request received",
+    );
+
+    return { req, res, user, ip, requestId, logger: reqLogger };
   },
 });
 

@@ -85,6 +85,7 @@ model Like {
   
   @@unique([userId, postId]) 
   @@index([postId, createdAt])
+  @@index([userId, isActive])
 
 }
 
