@@ -7,14 +7,16 @@ declare global {
   var _redisConfiguredUrl: string | undefined;
 }
 
+// Prefer Upstash-injected URLs first: stale REDIS_URL often lingers on Vercel after
+// switching from Redis Cloud, while Marketplace adds UPSTASH_REDIS_URL / UPSTASH_KV_URL.
 const redisUrlRaw =
-  process.env.REDIS_URL ??
   process.env.UPSTASH_REDIS_URL ??
-  process.env.UPSTASH_KV_URL;
+  process.env.UPSTASH_KV_URL ??
+  process.env.REDIS_URL;
 
 if (!redisUrlRaw) {
   throw new Error(
-    "Missing Redis URL: set REDIS_URL, UPSTASH_REDIS_URL, or UPSTASH_KV_URL",
+    "Missing Redis URL: set UPSTASH_REDIS_URL, UPSTASH_KV_URL, or REDIS_URL",
   );
 }
 
