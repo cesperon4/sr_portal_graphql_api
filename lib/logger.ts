@@ -12,6 +12,13 @@ export const logger = pino({
     paths: [
       "password",
       "*.password",
+      "raw",
+      "*.raw",
+      "variables.raw",
+      "variables.password",
+      "variables.data.password",
+      "variables.data.raw",
+      "variables.data.imageBase64",
       "req.headers.authorization",
       "req.headers.cookie",
       "token",

@@ -8,11 +8,7 @@ import { requireAuth } from "../../helpers/auth";
 import { parseLocation } from "../../helpers/stringParser";
 import { asStringArray } from "../../lib/json";
 import { prisma } from "../../lib/prisma";
-import {
-  getJSON,
-  makeCacheKey,
-  setJSON,
-} from "../../services/cache";
+import { getJSON, makeCacheKey, setJSON } from "../../services/cache";
 import { scheduleInvalidateByPrefix } from "../../services/jobs/invalidate-cache";
 import { scheduleDeletePostImages } from "../../services/jobs/delete-post-images";
 import { type ContextObject, isUser } from "../types/context";
@@ -209,9 +205,9 @@ export const postResolvers = {
         imageKeys = uploads.map((u) => u.imageKey);
       }
 
-      void scheduleInvalidateByPrefix("gql:posts");
-      void scheduleInvalidateByPrefix("gql:mapPosts");
-      void scheduleInvalidateByPrefix("gql:user");
+      void scheduleInvalidateByPrefix("gql:posts", context);
+      void scheduleInvalidateByPrefix("gql:mapPosts", context);
+      void scheduleInvalidateByPrefix("gql:user", context);
 
       return prisma.post.create({
         data: {
@@ -244,7 +240,7 @@ export const postResolvers = {
       // requireAuth(context); // ⛔ block if not authenticated
 
       // invalidateByPrefix("gql:posts");
-      void scheduleInvalidateByPrefix("gql:posts");
+      void scheduleInvalidateByPrefix("gql:posts", context);
 
       return prisma.post.update({
         where: {
@@ -279,9 +275,8 @@ export const postResolvers = {
       });
 
       if (!existing) {
-        throw new GraphQLError("Post not found", {
-          extensions: { code: "NOT_FOUND" },
-        });
+        // Idempotent: duplicate client requests after a successful delete.
+        return { id } as Post;
       }
 
       if (existing.userId !== context.user.userId) {
@@ -295,15 +290,14 @@ export const postResolvers = {
       const deleted = await prisma.post.delete({ where: { id } });
 
       if (imageKeys.length > 0) {
-        await scheduleDeletePostImages(
-          { imageKeys },
-          { jobId: `delete-post-images:${id}` },
-        );
+        await scheduleDeletePostImages({ imageKeys }, context, {
+          jobId: `delete-post-images-${id}`,
+        });
       }
 
-      void scheduleInvalidateByPrefix("gql:posts");
-      void scheduleInvalidateByPrefix("gql:mapPosts");
-      void scheduleInvalidateByPrefix("gql:user");
+      void scheduleInvalidateByPrefix("gql:posts", context);
+      void scheduleInvalidateByPrefix("gql:mapPosts", context);
+      void scheduleInvalidateByPrefix("gql:user", context);
 
       return deleted;
     },

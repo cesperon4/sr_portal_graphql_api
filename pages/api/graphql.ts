@@ -15,6 +15,7 @@ import { type ApiResponse } from "../../graphql/types/response";
 import { sendResponse } from "../../lib/apiResponse";
 import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { logger } from "../../lib/logger";
+import { graphqlOperationLoggingPlugin } from "../../lib/graphql-operation-logging-plugin";
 
 // CORS setup
 const cors = Cors({
@@ -39,6 +40,7 @@ function runCorsMiddleware(req: NextApiRequest, res: NextApiResponse) {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  plugins: [graphqlOperationLoggingPlugin()],
   context: async ({
     req,
     res,
@@ -91,15 +93,6 @@ const server = new ApolloServer({
       userId: user && "userId" in user ? user.userId : null,
       role: user?.role ?? null,
     });
-
-    reqLogger.info(
-      {
-        method: req.method,
-        url: req.url,
-        userAgent: req.headers["user-agent"],
-      },
-      "request received",
-    );
 
     return { req, res, user, ip, requestId, logger: reqLogger };
   },

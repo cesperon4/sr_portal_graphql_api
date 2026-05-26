@@ -208,6 +208,7 @@ export const userResolvers = {
     resendVerificationEmail: async (
       _parent: unknown,
       args: { email: string },
+      context: ContextObject,
     ) => {
       const { email } = args;
       const user = await prisma.user.findUnique({ where: { email } });
@@ -249,7 +250,7 @@ export const userResolvers = {
         },
       });
 
-      await scheduleEmailVerification({ email, raw });
+      await scheduleEmailVerification({ email, raw }, context);
 
       return true;
     },

@@ -153,7 +153,7 @@ export const arrestLogResolvers = {
         });
 
         // invalidateByPrefix("gql:arrestLogs");
-        void scheduleInvalidateByPrefix("gql:arrestLogs");
+        void scheduleInvalidateByPrefix("gql:arrestLogs", context);
 
         return sendResponse(arrest_log);
       } catch (err) {
@@ -171,7 +171,7 @@ export const arrestLogResolvers = {
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
       // invalidateByPrefix("gql:arrestLogs");
-      void scheduleInvalidateByPrefix("gql:arrestLogs");
+      void scheduleInvalidateByPrefix("gql:arrestLogs", context);
       return prisma.arrestLog.update({
         where: {
           id: Number(args.id),
@@ -181,9 +181,13 @@ export const arrestLogResolvers = {
         },
       });
     },
-    deleteArrestLog: (_parent: unknown, args: { id: number }) => {
+    deleteArrestLog: (
+      _parent: unknown,
+      args: { id: number },
+      context: ContextObject,
+    ) => {
       // invalidateByPrefix("gql:arrestLogs");
-      void scheduleInvalidateByPrefix("gql:arrestLogs");
+      void scheduleInvalidateByPrefix("gql:arrestLogs", context);
 
       return prisma.arrestLog.delete({
         where: {

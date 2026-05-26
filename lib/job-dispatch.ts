@@ -9,6 +9,7 @@ export type JobDispatchMode = "queue" | "inline";
  */
 export function useJobQueue(): boolean {
   const mode = process.env.JOB_DISPATCH as JobDispatchMode | undefined;
+
   if (mode === "queue") return true;
   if (mode === "inline") return false;
 

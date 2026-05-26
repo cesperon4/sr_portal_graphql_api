@@ -36,7 +36,7 @@ export const postCommentResolvers = {
       // requireAuth(context); // ⛔ block if not authenticated
       // invalidateByPrefix("gql:user");
 
-      void scheduleInvalidateByPrefix("gql:posts");
+      void scheduleInvalidateByPrefix("gql:posts", context);
 
       return prisma.postComment.create({
         data: {
