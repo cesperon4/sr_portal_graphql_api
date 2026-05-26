@@ -39,7 +39,7 @@ async function uploadImageToSupabase(filePath: string, fileName: string) {
     .getPublicUrl(storagePath);
 
   console.log("url: ", publicData.publicUrl);
-  return publicData.publicUrl;
+  return { imagePath: storagePath, imageUrl: publicData.publicUrl };
 }
 
 // 🎲 Seed posts
@@ -139,7 +139,10 @@ async function seedPosts(userIds: string[]) {
     const fileName = imageFiles[i];
     const localPath = path.join(postsDir, fileName);
 
-    const imageUrl = await uploadImageToSupabase(localPath, fileName);
+    const { imagePath, imageUrl } = await uploadImageToSupabase(
+      localPath,
+      fileName,
+    );
 
     await prisma.post.create({
       data: {
@@ -147,6 +150,7 @@ async function seedPosts(userIds: string[]) {
         body: postsData[i].body,
         userId: userIds[i % userIds.length],
         imageUrls: [imageUrl],
+        imageKeys: [imagePath],
         arrestLogId: null,
         lat,
         lon,
@@ -155,7 +159,7 @@ async function seedPosts(userIds: string[]) {
         city: "Santa Rosa",
         zip: "95401",
         date_occurred: new Date(
-          Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000)
+          Date.now() - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000),
         ),
         category: randomCategory(),
       },

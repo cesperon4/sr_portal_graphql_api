@@ -12,6 +12,7 @@ import {
 import { type UpdateArrestLogArgs } from "../types/arrestLogs";
 import { type ContextObject } from "../types/context";
 import { type ApiResponse } from "../types/response";
+import { scheduleInvalidateByPrefix } from "../../services/jobs/invalidate-cache";
 // const prisma = new PrismaClient();
 
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -151,11 +152,11 @@ export const arrestLogResolvers = {
           },
         });
 
-        invalidateByPrefix("gql:arrestLogs");
+        // invalidateByPrefix("gql:arrestLogs");
+        void scheduleInvalidateByPrefix("gql:arrestLogs");
 
         return sendResponse(arrest_log);
       } catch (err) {
-        console.log("error in mutation create log: ", err);
         return sendResponse(
           null,
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -169,7 +170,8 @@ export const arrestLogResolvers = {
       context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
-      invalidateByPrefix("gql:arrestLogs");
+      // invalidateByPrefix("gql:arrestLogs");
+      void scheduleInvalidateByPrefix("gql:arrestLogs");
       return prisma.arrestLog.update({
         where: {
           id: Number(args.id),
@@ -180,7 +182,9 @@ export const arrestLogResolvers = {
       });
     },
     deleteArrestLog: (_parent: unknown, args: { id: number }) => {
-      invalidateByPrefix("gql:arrestLogs");
+      // invalidateByPrefix("gql:arrestLogs");
+      void scheduleInvalidateByPrefix("gql:arrestLogs");
+
       return prisma.arrestLog.delete({
         where: {
           id: Number(args.id),

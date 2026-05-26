@@ -3,6 +3,7 @@ import { sendVerificationEmail } from "../helpers/mailer";
 import { createVerificationToken } from "../helpers/verification";
 import { prisma } from "../lib/prisma";
 import type { CreateUserInput } from "../schemas/user.schema";
+import { scheduleEmailVerification } from "./jobs/email-verification";
 import {
   CreateEmailVerificationToken,
   CreateUser,
@@ -41,7 +42,7 @@ export async function RegisterUserService(input: CreateUserInput) {
     return created;
   });
 
-  await sendVerificationEmail(user.email, raw);
+  await scheduleEmailVerification({ email: user.email, raw });
 
   return user;
 }

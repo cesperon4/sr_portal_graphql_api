@@ -85,6 +85,7 @@ export type PostCountAggregateOutputType = {
   updatedAt: number
   arrestLogId: number
   imageUrls: number
+  imageKeys: number
   lat: number
   lon: number
   street: number
@@ -156,6 +157,7 @@ export type PostCountAggregateInputType = {
   updatedAt?: true
   arrestLogId?: true
   imageUrls?: true
+  imageKeys?: true
   lat?: true
   lon?: true
   street?: true
@@ -262,6 +264,7 @@ export type PostGroupByOutputType = {
   updatedAt: Date
   arrestLogId: number | null
   imageUrls: runtime.JsonValue
+  imageKeys: runtime.JsonValue
   lat: number | null
   lon: number | null
   street: string | null
@@ -304,6 +307,7 @@ export type PostWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  imageKeys?: Prisma.JsonFilter<"Post">
   lat?: Prisma.FloatNullableFilter<"Post"> | number | null
   lon?: Prisma.FloatNullableFilter<"Post"> | number | null
   street?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -327,6 +331,7 @@ export type PostOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  imageKeys?: Prisma.SortOrder
   lat?: Prisma.SortOrderInput | Prisma.SortOrder
   lon?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -353,6 +358,7 @@ export type PostWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  imageKeys?: Prisma.JsonFilter<"Post">
   lat?: Prisma.FloatNullableFilter<"Post"> | number | null
   lon?: Prisma.FloatNullableFilter<"Post"> | number | null
   street?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -376,6 +382,7 @@ export type PostOrderByWithAggregationInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrderInput | Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  imageKeys?: Prisma.SortOrder
   lat?: Prisma.SortOrderInput | Prisma.SortOrder
   lon?: Prisma.SortOrderInput | Prisma.SortOrder
   street?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -403,6 +410,7 @@ export type PostScalarWhereWithAggregatesInput = {
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableWithAggregatesFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonWithAggregatesFilter<"Post">
+  imageKeys?: Prisma.JsonWithAggregatesFilter<"Post">
   lat?: Prisma.FloatNullableWithAggregatesFilter<"Post"> | number | null
   lon?: Prisma.FloatNullableWithAggregatesFilter<"Post"> | number | null
   street?: Prisma.StringNullableWithAggregatesFilter<"Post"> | string | null
@@ -420,6 +428,7 @@ export type PostCreateInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -443,6 +452,7 @@ export type PostUncheckedCreateInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -463,6 +473,7 @@ export type PostUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -486,6 +497,7 @@ export type PostUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -508,6 +520,7 @@ export type PostCreateManyInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -525,6 +538,7 @@ export type PostUpdateManyMutationInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -544,6 +558,7 @@ export type PostUncheckedUpdateManyInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -573,6 +588,7 @@ export type PostCountOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   arrestLogId?: Prisma.SortOrder
   imageUrls?: Prisma.SortOrder
+  imageKeys?: Prisma.SortOrder
   lat?: Prisma.SortOrder
   lon?: Prisma.SortOrder
   street?: Prisma.SortOrder
@@ -753,6 +769,7 @@ export type PostCreateWithoutUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -774,6 +791,7 @@ export type PostUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -825,6 +843,7 @@ export type PostScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Post"> | Date | string
   arrestLogId?: Prisma.IntNullableFilter<"Post"> | number | null
   imageUrls?: Prisma.JsonFilter<"Post">
+  imageKeys?: Prisma.JsonFilter<"Post">
   lat?: Prisma.FloatNullableFilter<"Post"> | number | null
   lon?: Prisma.FloatNullableFilter<"Post"> | number | null
   street?: Prisma.StringNullableFilter<"Post"> | string | null
@@ -842,6 +861,7 @@ export type PostCreateWithoutLikesInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -864,6 +884,7 @@ export type PostUncheckedCreateWithoutLikesInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -899,6 +920,7 @@ export type PostUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -921,6 +943,7 @@ export type PostUncheckedUpdateWithoutLikesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -940,6 +963,7 @@ export type PostCreateWithoutPostCommentsInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -962,6 +986,7 @@ export type PostUncheckedCreateWithoutPostCommentsInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -997,6 +1022,7 @@ export type PostUpdateWithoutPostCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1019,6 +1045,7 @@ export type PostUncheckedUpdateWithoutPostCommentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1038,6 +1065,7 @@ export type PostCreateWithoutArrestLogInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -1060,6 +1088,7 @@ export type PostUncheckedCreateWithoutArrestLogInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -1095,6 +1124,7 @@ export type PostUpdateWithoutArrestLogInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1117,6 +1147,7 @@ export type PostUncheckedUpdateWithoutArrestLogInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1137,6 +1168,7 @@ export type PostCreateManyUserInput = {
   updatedAt?: Date | string
   arrestLogId?: number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: number | null
   lon?: number | null
   street?: string | null
@@ -1154,6 +1186,7 @@ export type PostUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1175,6 +1208,7 @@ export type PostUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1196,6 +1230,7 @@ export type PostUncheckedUpdateManyWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   arrestLogId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   imageUrls?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  imageKeys?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lon?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   street?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1255,6 +1290,7 @@ export type PostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  imageKeys?: boolean
   lat?: boolean
   lon?: boolean
   street?: boolean
@@ -1279,6 +1315,7 @@ export type PostSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  imageKeys?: boolean
   lat?: boolean
   lon?: boolean
   street?: boolean
@@ -1299,6 +1336,7 @@ export type PostSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  imageKeys?: boolean
   lat?: boolean
   lon?: boolean
   street?: boolean
@@ -1319,6 +1357,7 @@ export type PostSelectScalar = {
   updatedAt?: boolean
   arrestLogId?: boolean
   imageUrls?: boolean
+  imageKeys?: boolean
   lat?: boolean
   lon?: boolean
   street?: boolean
@@ -1329,7 +1368,7 @@ export type PostSelectScalar = {
   category?: boolean
 }
 
-export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrls" | "lat" | "lon" | "street" | "city" | "state" | "zip" | "date_occurred" | "category", ExtArgs["result"]["post"]>
+export type PostOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "body" | "userId" | "createdAt" | "updatedAt" | "arrestLogId" | "imageUrls" | "imageKeys" | "lat" | "lon" | "street" | "city" | "state" | "zip" | "date_occurred" | "category", ExtArgs["result"]["post"]>
 export type PostInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   arrestLog?: boolean | Prisma.Post$arrestLogArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1361,6 +1400,7 @@ export type $PostPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     updatedAt: Date
     arrestLogId: number | null
     imageUrls: runtime.JsonValue
+    imageKeys: runtime.JsonValue
     lat: number | null
     lon: number | null
     street: string | null
@@ -1804,6 +1844,7 @@ export interface PostFieldRefs {
   readonly updatedAt: Prisma.FieldRef<"Post", 'DateTime'>
   readonly arrestLogId: Prisma.FieldRef<"Post", 'Int'>
   readonly imageUrls: Prisma.FieldRef<"Post", 'Json'>
+  readonly imageKeys: Prisma.FieldRef<"Post", 'Json'>
   readonly lat: Prisma.FieldRef<"Post", 'Float'>
   readonly lon: Prisma.FieldRef<"Post", 'Float'>
   readonly street: Prisma.FieldRef<"Post", 'String'>

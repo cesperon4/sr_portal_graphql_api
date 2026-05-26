@@ -25,9 +25,7 @@ const redisUrl: string = redisUrlRaw;
 function connectRedis(url: string): Redis {
   return new Redis(
     url,
-    url.startsWith("rediss://")
-      ? { tls: { rejectUnauthorized: false } }
-      : {},
+    url.startsWith("rediss://") ? { tls: { rejectUnauthorized: false } } : {},
   );
 }
 
@@ -37,10 +35,7 @@ function getRedis(): Redis {
     return connectRedis(redisUrl);
   }
 
-  if (
-    global._redis &&
-    global._redisConfiguredUrl === redisUrl
-  ) {
+  if (global._redis && global._redisConfiguredUrl === redisUrl) {
     return global._redis;
   }
 

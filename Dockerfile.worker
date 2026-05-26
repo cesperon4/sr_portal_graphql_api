@@ -1,0 +1,29 @@
+# BullMQ email worker — run from sr_portal_graphql_api/
+# docker buildx build --pull --provenance=mode=max --sbom=true -f Dockerfile.worker -t sr-portal-email-worker .
+# docker run --rm -it --env-file .env --env-file .env.development.local sr-portal-email-worker
+
+# Alpine + security upgrades avoids Bookworm slim “catalog” highs Docker Scout ties to debian:GnuTLS/glibc blobs.
+FROM node:lts-alpine
+
+WORKDIR /app
+
+# prisma.config.ts requires DATABASE_URL (or DATABASE_TEST_URL) during `npm ci` → prisma generate.
+# Replace at build only if needed; runtime DB is not required for this worker unless you import Prisma later.
+ARG DATABASE_URL=postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder?schema=public
+ENV DATABASE_URL=$DATABASE_URL
+
+RUN apk upgrade --no-cache \
+    && apk add --no-cache libc6-compat openssl ca-certificates
+
+COPY package.json package-lock.json ./
+
+# prisma generate runs during npm postinstall — schema + config must exist first
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+
+RUN npm ci
+
+COPY . .
+
+# Worker entry (TypeScript via tsx — listed in package.json devDependencies)
+CMD ["npx", "tsx", "workers/email.worker.ts"]
