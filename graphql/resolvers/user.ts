@@ -20,6 +20,7 @@ import { getJSON, makeCacheKey, setJSON } from "../../services/cache";
 import { RegisterUserService } from "../../services/user_service";
 import { type ContextObject } from "../types/context";
 import { type ApiResponse, type Page } from "../types/response";
+import { scheduleEmailVerification } from "../../services/jobs/email-verification";
 type CreateUserArgs = {
   firstname: string;
   lastname: string;
@@ -41,18 +42,6 @@ import {
 import { logger } from "../../lib/logger";
 import { isGuest } from "../types/context";
 
-// type PostPage = {
-//   posts: Post[];
-//   cursor: number | null;
-//   hasNextPage: boolean;
-// };
-
-// type PostCommentPage = {
-//   comments: PostComment[];
-//   cursor: number | null;
-//   hasNextPage: boolean;
-// };
-
 class EmailInUseError extends Error {
   code = "EMAIL_IN_USE";
 }
@@ -68,8 +57,8 @@ type UserPaginatedArgs = {
   cursor: number;
 };
 
-const COOLDOWN_SECONDS = 60;
-const DAILY_LIMIT = 5;
+const COOLDOWN_SECONDS = 1;
+const DAILY_LIMIT = 100;
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const userResolvers = {
@@ -133,8 +122,6 @@ export const userResolvers = {
             },
           });
 
-          console.log("successfull send response");
-
           return sendResponse(user);
         } catch (err) {
           console.log("error");
@@ -153,15 +140,7 @@ export const userResolvers = {
 
       if (!authenticated || !context.user || isGuest(context.user))
         throw new Error("Unauthorized");
-      // if (!context.user || isGuest(context.user)) {
-      //   return sendResponse(
-      //     null,
-      //     HttpStatus.UNAUTHORIZED,
-      //     HttpMessages.UNAUTHORIZED,
-      //   );
-      // }
 
-      // context.user is SignedUser here
       return await prisma.user.findUnique({
         where: { id: context.user.userId },
         select: {
@@ -182,14 +161,18 @@ export const userResolvers = {
       _parent: unknown,
       args: { data: CreateUserArgs },
       _context: ContextObject,
-    ) => {
+    ): Promise<ApiResponse<User | null>> => {
       try {
         const parsed = CreateUserSchema.parse(args.data);
         const user = await RegisterUserService(parsed);
-
         return sendResponse(user, HttpStatus.CREATED, HttpMessages.CREATED);
-      } catch (error) {
-        console.log("error: ", error);
+      } catch (err) {
+        console.log("err", err);
+        return sendResponse(
+          null,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpMessages.INTERNAL_SERVER_ERROR,
+        );
       }
     },
 
@@ -266,7 +249,7 @@ export const userResolvers = {
         },
       });
 
-      await sendVerificationEmail(email, raw);
+      await scheduleEmailVerification({ email, raw });
 
       return true;
     },
@@ -298,13 +281,8 @@ export const userResolvers = {
             },
           });
 
-          console.log("user in upsertUser: ", user);
-
           const token = generateAccessToken(user.id, defaultRole);
           const refreshToken = generateRefreshToken(user.id, defaultRole);
-
-          console.log("token in upsertUser: ", token);
-          console.log("refreshToken in upsertUser: ", refreshToken);
 
           return sendResponse(
             { user, token, refreshToken },
@@ -375,8 +353,6 @@ export const userResolvers = {
       const accessToken = generateAccessToken(user.id, "USER");
 
       setRefreshTokenCookie(context, refreshToken);
-
-      console.log("accessToken in login: ", accessToken);
 
       return {
         user,

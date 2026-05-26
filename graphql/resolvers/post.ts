@@ -1,21 +1,21 @@
-import { GraphQLResolveInfo } from "graphql";
+import { GraphQLError, GraphQLResolveInfo } from "graphql";
 import { type Post } from "../../generated/prisma/client";
 import { supabaseAdmin } from "../../lib/supabaseAdmin"; // server-side Supabase client
 
 import { sendResponse } from "../../lib/apiResponse";
 import { HttpMessages, HttpStatus } from "../../lib/constants/http";
+import { requireAuth } from "../../helpers/auth";
+import { parseLocation } from "../../helpers/stringParser";
+import { asStringArray } from "../../lib/json";
+import { prisma } from "../../lib/prisma";
 import {
   getJSON,
-  invalidateByPrefix,
   makeCacheKey,
   setJSON,
 } from "../../services/cache";
-
-import { GraphQLError } from "graphql";
-import { requireAuth } from "../../helpers/auth";
-import { parseLocation } from "../../helpers/stringParser";
-import { prisma } from "../../lib/prisma";
-import { type ContextObject } from "../types/context";
+import { scheduleInvalidateByPrefix } from "../../services/jobs/invalidate-cache";
+import { scheduleDeletePostImages } from "../../services/jobs/delete-post-images";
+import { type ContextObject, isUser } from "../types/context";
 import { type PostsArgs } from "../types/posts";
 import { type ApiResponse, type Page } from "../types/response";
 
@@ -169,9 +169,7 @@ export const postResolvers = {
       // requireAuth(context); // ⛔ block if not authenticated
 
       let imageUrls: string[] = [];
-
-      // 1️⃣ Upload image if provided
-      // 1️⃣ Upload images if provided
+      let imageKeys: string[] = [];
 
       const { street, city, state, zip } = parseLocation(
         args.data.locationName,
@@ -180,14 +178,14 @@ export const postResolvers = {
       if (args.data.imageBase64?.length > 0) {
         const uploadPromises = args.data.imageBase64.map(
           async (base64, index) => {
-            const fileName = `post-images/${Date.now()}-${args.data.imageName[index]}`;
+            const storageKey = `post-images/${Date.now()}-${args.data.imageName[index]}`;
             const base64String = base64.includes(",")
               ? base64.split(",")[1]
               : base64;
 
             const { error: uploadError } = await supabaseAdmin.storage
               .from("images")
-              .upload(fileName, Buffer.from(base64String, "base64"), {
+              .upload(storageKey, Buffer.from(base64String, "base64"), {
                 contentType: "image/jpeg",
                 upsert: false,
               });
@@ -197,18 +195,23 @@ export const postResolvers = {
 
             const { data: publicData } = supabaseAdmin.storage
               .from("images")
-              .getPublicUrl(fileName);
-            console.log("public data: ", publicData.publicUrl);
-            return publicData.publicUrl;
+              .getPublicUrl(storageKey);
+
+            return {
+              imageUrl: publicData.publicUrl,
+              imageKey: storageKey,
+            };
           },
         );
 
-        imageUrls = await Promise.all(uploadPromises);
+        const uploads = await Promise.all(uploadPromises);
+        imageUrls = uploads.map((u) => u.imageUrl);
+        imageKeys = uploads.map((u) => u.imageKey);
       }
 
-      invalidateByPrefix("gql:posts");
-      invalidateByPrefix("gql:mapPosts"); //? Check if this logic is okay
-      invalidateByPrefix("gql:user");
+      void scheduleInvalidateByPrefix("gql:posts");
+      void scheduleInvalidateByPrefix("gql:mapPosts");
+      void scheduleInvalidateByPrefix("gql:user");
 
       return prisma.post.create({
         data: {
@@ -219,10 +222,10 @@ export const postResolvers = {
           createdAt: new Date(),
           updatedAt: new Date(),
           imageUrls,
+          imageKeys,
           lat: args.data.lat ? parseFloat(args.data.lat) : undefined,
           lon: args.data.lon ? parseFloat(args.data.lon) : undefined,
           street: street ? street : undefined,
-          // street: street ? { set: street } : undefined,
           category: args.data.category ? args.data.category : undefined,
           city: city ? city : undefined,
           state: state ? state : undefined,
@@ -240,7 +243,8 @@ export const postResolvers = {
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
-      invalidateByPrefix("gql:posts");
+      // invalidateByPrefix("gql:posts");
+      void scheduleInvalidateByPrefix("gql:posts");
 
       return prisma.post.update({
         where: {
@@ -256,14 +260,52 @@ export const postResolvers = {
         },
       });
     },
-    deletePost: (_parent: unknown, args: { id: number }) => {
-      invalidateByPrefix("gql:posts");
+    deletePost: async (
+      _parent: unknown,
+      args: { id: number },
+      context: ContextObject,
+    ) => {
+      if (!requireAuth(context) || !context.user || !isUser(context.user)) {
+        throw new GraphQLError("Unauthorized", {
+          extensions: { code: "UNAUTHENTICATED" },
+        });
+      }
 
-      return prisma.post.delete({
-        where: {
-          id: Number(args.id),
-        },
+      const id = Number(args.id);
+
+      const existing = await prisma.post.findUnique({
+        where: { id },
+        select: { id: true, userId: true, imageKeys: true },
       });
+
+      if (!existing) {
+        throw new GraphQLError("Post not found", {
+          extensions: { code: "NOT_FOUND" },
+        });
+      }
+
+      if (existing.userId !== context.user.userId) {
+        throw new GraphQLError("You can only delete your own posts", {
+          extensions: { code: "FORBIDDEN" },
+        });
+      }
+
+      const imageKeys = asStringArray(existing.imageKeys);
+
+      const deleted = await prisma.post.delete({ where: { id } });
+
+      if (imageKeys.length > 0) {
+        await scheduleDeletePostImages(
+          { imageKeys },
+          { jobId: `delete-post-images:${id}` },
+        );
+      }
+
+      void scheduleInvalidateByPrefix("gql:posts");
+      void scheduleInvalidateByPrefix("gql:mapPosts");
+      void scheduleInvalidateByPrefix("gql:user");
+
+      return deleted;
     },
   },
 

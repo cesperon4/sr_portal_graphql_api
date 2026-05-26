@@ -1,6 +1,5 @@
 import { prisma } from "../../lib/prisma";
-// const prisma = new PrismaClient();
-import { invalidateByPrefix } from "../../services/cache";
+import { scheduleInvalidateByPrefix } from "../../services/jobs/invalidate-cache";
 
 type PostComment = Awaited<ReturnType<typeof prisma.postComment.findUnique>>;
 
@@ -17,7 +16,7 @@ export const postCommentResolvers = {
     postComment: async (
       _parent: unknown,
       args: { id: number },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 
@@ -32,11 +31,12 @@ export const postCommentResolvers = {
     createPostComment: async (
       _parent: unknown,
       args: { data: CreatePostArgs },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
-      console.log("invalidating user");
-      invalidateByPrefix("gql:user");
+      // invalidateByPrefix("gql:user");
+
+      void scheduleInvalidateByPrefix("gql:posts");
 
       return prisma.postComment.create({
         data: {
@@ -51,7 +51,7 @@ export const postCommentResolvers = {
     updatePostComment: (
       _parent: unknown,
       args: { id: number; data: Partial<CreatePostArgs> },
-      context: any
+      context: any,
     ) => {
       // requireAuth(context); // ⛔ block if not authenticated
 

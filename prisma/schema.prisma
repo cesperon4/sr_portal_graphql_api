@@ -60,6 +60,7 @@ model Post {
   user         User          @relation(fields: [userId], references: [id])
   postComments PostComment[]
   imageUrls    Json     @default("[]")  // store an array as JSON
+  imageKeys    Json     @default("[]")
   likes        Like[]
   lat Float?
   lon Float?

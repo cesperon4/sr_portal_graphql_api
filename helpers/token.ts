@@ -36,7 +36,7 @@ export async function generateRefreshToken(userId: string, role: string) {
 
 export function generateAccessToken(userId: string, role: string) {
   return jwt.sign({ userId, role }, process.env.JWT_SECRET!, {
-    expiresIn: "10s",
+    expiresIn: "15m",
   });
 }
 
@@ -100,7 +100,7 @@ export async function rotateRefreshToken(payload: {
       { userId: payload.userId, role: payload.role },
       process.env.JWT_REFRESH_SECRET!,
       {
-        expiresIn: "10s",
+        expiresIn: "7d",
       },
     );
 

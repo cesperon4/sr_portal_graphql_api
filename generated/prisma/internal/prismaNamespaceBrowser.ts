@@ -125,6 +125,7 @@ export const PostScalarFieldEnum = {
   updatedAt: 'updatedAt',
   arrestLogId: 'arrestLogId',
   imageUrls: 'imageUrls',
+  imageKeys: 'imageKeys',
   lat: 'lat',
   lon: 'lon',
   street: 'street',
