@@ -1,25 +1,13 @@
 import Redis from "ioredis";
 
+import { isRedisEnabled, requireRedisUrl } from "./redis-config";
+
 declare global {
   // "@ts-expect-error"
   var _redisBullMq: Redis | undefined;
   // "@ts-expect-error"
   var _redisBullMqConfiguredUrl: string | undefined;
 }
-
-/** Same precedence as lib/redis.ts; second TCP connection with BullMQ-required options. */
-const redisUrlRaw =
-  process.env.UPSTASH_KV_URL ??
-  process.env.UPSTASH_REDIS_URL ??
-  process.env.REDIS_URL;
-
-if (!redisUrlRaw) {
-  throw new Error(
-    "Missing Redis URL: set UPSTASH_REDIS_URL, UPSTASH_KV_URL, or REDIS_URL",
-  );
-}
-
-const redisUrl: string = redisUrlRaw;
 
 function bullMqRedisOptions(url: string) {
   const base = {
@@ -42,7 +30,15 @@ function connectBullMqRedis(url: string): Redis {
  * Dedicated ioredis connection for BullMQ (Queue / Worker).
  * Do not use lib/redis.ts — BullMQ expects these connection options.
  */
-function getBullMqConnection(): Redis {
+export function getBullMqConnection(): Redis {
+  if (!isRedisEnabled()) {
+    throw new Error(
+      "BullMQ requires Redis. Set REDIS_ENABLED=true and REDIS_URL for local workers.",
+    );
+  }
+
+  const redisUrl = requireRedisUrl();
+
   if (process.env.NODE_ENV === "production") {
     return connectBullMqRedis(redisUrl);
   }
@@ -63,4 +59,11 @@ function getBullMqConnection(): Redis {
   return client;
 }
 
-export const bullMqConnection = getBullMqConnection();
+/** @deprecated Prefer getBullMqConnection() — lazy init when queues/workers start. */
+export const bullMqConnection = new Proxy({} as Redis, {
+  get(_target, prop) {
+    const client = getBullMqConnection();
+    const value = client[prop as keyof Redis];
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});

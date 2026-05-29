@@ -8,6 +8,13 @@ import {
 } from "../queues/storage.queue.js";
 import { deletePostImagesHandler } from "../services/jobs/handlers/delete-post-images.js";
 
+import { logger } from "../lib/logger.js";
+
+const workerLogger = logger.child({
+  component: "storage.worker",
+  queue: STORAGE_QUEUE_NAME,
+});
+
 async function handleDeletePostImages(
   job: Job<DeletePostImages>,
 ): Promise<FileObject[]> {
@@ -24,6 +31,13 @@ const handlers: Record<
 const worker = new Worker<DeletePostImages, FileObject[]>(
   STORAGE_QUEUE_NAME,
   async (job: Job<DeletePostImages>) => {
+    const jobLogger = workerLogger.child({
+      requestId: job.data.requestId,
+      jobId: job.id,
+      jobName: job.name,
+    });
+    jobLogger.info({ event: "job.active" }, "processing job");
+
     const run = handlers[job.name];
     if (!run) throw new Error(`Unknown job name: ${job.name}`);
 
@@ -33,31 +47,39 @@ const worker = new Worker<DeletePostImages, FileObject[]>(
 );
 
 worker.on("ready", () => {
-  console.log("[storage.worker] BullMQ worker ready — connected to Redis");
+  workerLogger.info("worker ready");
 });
 
 worker.on("completed", (job, result) => {
-  console.log("[storage.worker] completed", {
-    jobId: job.id,
-    jobName: job.name,
-    requestedKeys: job.data.imageKeys,
-    deleted: result.map((file) => file.name),
-  });
+  workerLogger.info(
+    {
+      requestId: job.data.requestId,
+      event: "job.completed",
+      userId: job.data.userId,
+      jobId: job.id,
+      jobName: job.name,
+      meta: {
+        imageKeyCount: job.data.imageKeys.length,
+        deletedCount: result.length,
+      },
+    },
+    "job completed",
+  );
 });
 
 worker.on("failed", (job, err) => {
   if (job) {
-    console.error(
-      "[storage.worker] job failed",
-      "id:",
-      job.id,
-      "name:",
-      job.name,
-      "data:",
-      job.data,
-      err,
+    workerLogger.error(
+      {
+        requestId: job.data.requestId,
+        event: "job.failed",
+        userId: job.data.userId,
+        jobId: job?.id,
+        jobName: job?.name,
+        attemptsMade: job?.attemptsMade,
+        err, // pino serializes this
+      },
+      "job failed",
     );
-  } else {
-    console.error("[storage.worker] job failed (no job ref)", err);
   }
 });

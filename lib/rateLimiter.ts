@@ -1,6 +1,6 @@
 import { type ContextObject } from "../graphql/types/context";
-
-import { redis } from "./redis"; // Import your existing Redis instance
+import { isRedisEnabled } from "./redis-config";
+import { getRedis } from "./redis";
 
 type RateLimitOptions = {
   identifier: string;
@@ -22,9 +22,19 @@ export async function checkRateLimit({
   window,
   operation = "default",
 }: RateLimitOptions): Promise<RateLimitResult> {
+  if (!isRedisEnabled()) {
+    return {
+      allowed: true,
+      remaining: max,
+      resetAt: new Date(Date.now() + window * 1000),
+      current: 0,
+    };
+  }
+
   const key = `rate_limit:${operation}:${identifier}`;
 
   try {
+    const redis = getRedis();
     const current = await redis.get(key);
     const count = current ? parseInt(current, 10) : 0;
 
@@ -54,7 +64,7 @@ export async function checkRateLimit({
       allowed: true,
       remaining: Math.max(0, max - newCount),
       resetAt: new Date(
-        Date.now() + (currentTTL > 0 ? currentTTL : window) * 1000
+        Date.now() + (currentTTL > 0 ? currentTTL : window) * 1000,
       ),
       current: newCount,
     };

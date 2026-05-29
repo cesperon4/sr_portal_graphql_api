@@ -290,9 +290,17 @@ export const postResolvers = {
       const deleted = await prisma.post.delete({ where: { id } });
 
       if (imageKeys.length > 0) {
-        await scheduleDeletePostImages({ imageKeys }, context, {
-          jobId: `delete-post-images-${id}`,
-        });
+        await scheduleDeletePostImages(
+          {
+            requestId: context.requestId,
+            userId: context.user.userId,
+            imageKeys,
+          },
+          context,
+          {
+            jobId: `delete-post-images-${id}`,
+          },
+        );
       }
 
       void scheduleInvalidateByPrefix("gql:posts", context);

@@ -1,0 +1,53 @@
+# Local Redis + BullMQ workers.
+#
+# Full stack:  docker compose up -d
+# Rebuild:     docker compose up -d --build
+# One worker:  docker compose up -d --build storage-worker
+# Logs:        docker compose logs -f storage-worker
+#
+# API on host: REDIS_ENABLED=true  REDIS_URL=redis://127.0.0.1:6379
+
+x-worker: &worker
+  build:
+    context: .
+    dockerfile: Dockerfile.worker
+  env_file:
+    - .env
+    - .env.development.local
+  environment:
+    REDIS_ENABLED: "true"
+    REDIS_URL: redis://redis:6379
+    JOB_DISPATCH: queue
+  depends_on:
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  storage-worker:
+    <<: *worker
+    command: ["npx", "tsx", "workers/storage.worker.ts"]
+
+  email-worker:
+    <<: *worker
+    command: ["npx", "tsx", "workers/email.worker.ts"]
+
+  cache-worker:
+    <<: *worker
+    command: ["npx", "tsx", "workers/cache.worker.ts"]
+
+volumes:
+  redis-data:

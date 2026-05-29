@@ -13,7 +13,7 @@ import { createVerificationToken, hashToken } from "../../helpers/verification";
 import { sendResponse } from "../../lib/apiResponse";
 import { HttpMessages, HttpStatus } from "../../lib/constants/http";
 import { prisma } from "../../lib/prisma";
-import { redis } from "../../lib/redis";
+import { assertResendVerificationAllowed } from "../../lib/resend-verification-limits";
 import { withRateLimit } from "../../lib/withRateLimit";
 import { CreateUserSchema } from "../../schemas/user.schema";
 import { getJSON, makeCacheKey, setJSON } from "../../services/cache";
@@ -57,8 +57,6 @@ type UserPaginatedArgs = {
   cursor: number;
 };
 
-const COOLDOWN_SECONDS = 1;
-const DAILY_LIMIT = 100;
 const POSTS_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 export const userResolvers = {
@@ -216,28 +214,7 @@ export const userResolvers = {
       if (!user) throw new Error("No account for that email");
       if (user.emailVerified) return true;
 
-      const cooldownKey = `resend:cooldown:${user.id}`;
-      const dailyKey = `resend:daily:${user.id}:${new Date()
-        .toISOString()
-        .slice(0, 10)}`;
-
-      // Check cooldown
-      const ttl = await redis.ttl(cooldownKey);
-      if (ttl > 0) {
-        throw new Error(`Please wait ${ttl}s before requesting again`);
-      }
-
-      // Check daily limit
-      const count = await redis.incr(dailyKey);
-      if (count === 1) {
-        await redis.expire(dailyKey, 24 * 60 * 60); // expire in 24h
-      }
-      if (count > DAILY_LIMIT) {
-        throw new Error("Daily resend limit reached");
-      }
-
-      // Set cooldown
-      await redis.set(cooldownKey, "1", "EX", COOLDOWN_SECONDS);
+      await assertResendVerificationAllowed(user.id);
 
       const { raw, hash } = createVerificationToken();
       const expires = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h

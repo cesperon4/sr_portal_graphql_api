@@ -1,26 +1,13 @@
 import Redis from "ioredis";
 
+import { isRedisEnabled, requireRedisUrl } from "./redis-config";
+
 declare global {
   // "@ts-expect-error"
   var _redis: Redis | undefined;
   // "@ts-expect-error"
   var _redisConfiguredUrl: string | undefined;
 }
-
-// Prefer Upstash-injected URLs first: stale REDIS_URL often lingers on Vercel after
-// switching from Redis Cloud, while Marketplace adds UPSTASH_REDIS_URL / UPSTASH_KV_URL.
-const redisUrlRaw =
-  process.env.UPSTASH_REDIS_URL ??
-  process.env.UPSTASH_KV_URL ??
-  process.env.REDIS_URL;
-
-if (!redisUrlRaw) {
-  throw new Error(
-    "Missing Redis URL: set UPSTASH_REDIS_URL, UPSTASH_KV_URL, or REDIS_URL",
-  );
-}
-
-const redisUrl: string = redisUrlRaw;
 
 function connectRedis(url: string): Redis {
   return new Redis(
@@ -30,7 +17,9 @@ function connectRedis(url: string): Redis {
 }
 
 /** Dev HMR keeps `global._redis`; recreate client when REDIS_URL changes. */
-function getRedis(): Redis {
+function createRedisClient(): Redis {
+  const redisUrl = requireRedisUrl();
+
   if (process.env.NODE_ENV === "production") {
     return connectRedis(redisUrl);
   }
@@ -51,4 +40,26 @@ function getRedis(): Redis {
   return client;
 }
 
-export const redis = getRedis();
+let redisClient: Redis | undefined;
+
+/** Lazy Redis client. Only connects when Redis is enabled. */
+export function getRedis(): Redis {
+  if (!isRedisEnabled()) {
+    throw new Error("Redis is disabled (REDIS_ENABLED=false)");
+  }
+
+  if (!redisClient) {
+    redisClient = createRedisClient();
+  }
+
+  return redisClient;
+}
+
+/** @deprecated Prefer getRedis() — kept for existing imports. */
+export const redis = new Proxy({} as Redis, {
+  get(_target, prop) {
+    const client = getRedis();
+    const value = client[prop as keyof Redis];
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
